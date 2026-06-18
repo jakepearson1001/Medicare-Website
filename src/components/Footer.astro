@@ -16,14 +16,13 @@
       <!-- Brand column -->
       <div class="footer-brand">
         <a href="https://jordan-cu.org/" class="footer-logo" aria-label="Jordan Credit Union — Home">
-          <svg width="36" height="36" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="20" cy="20" r="18" stroke="#2d8a4e" stroke-width="2" fill="none"/>
-            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="7" fill="#2d8a4e">JCU</text>
-          </svg>
-          <div>
-            <span class="footer-logo-name">Jordan</span>
-            <span class="footer-logo-sub">Credit Union</span>
-          </div>
+          <img
+            src="/images/JCU-Logo-ColorRev2022_300x150.webp"
+            alt="Jordan Credit Union"
+            width="150"
+            height="75"
+            loading="lazy"
+          />
         </a>
         <div class="footer-social">
           <a href="https://www.facebook.com/jordancreditunion" aria-label="JCU on Facebook" rel="noopener noreferrer" target="_blank">
@@ -119,9 +118,8 @@
   .footer-grid { display: grid; grid-template-columns: 240px 1fr; gap: var(--space-xl); }
 
   /* Brand */
-  .footer-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; margin-bottom: 1rem; }
-  .footer-logo-name { display: block; font-size: 1.2rem; font-weight: 800; color: var(--jcu-green); }
-  .footer-logo-sub { display: block; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--jcu-green-mid); }
+  .footer-logo { display: flex; align-items: center; text-decoration: none; margin-bottom: 1rem; }
+  .footer-logo img { height: 52px; width: auto; }
   .footer-social { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
   .footer-social a { color: var(--jcu-gray-text); transition: color 0.2s; }
   .footer-social a:hover { color: var(--jcu-green-mid); }
