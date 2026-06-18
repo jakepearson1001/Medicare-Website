@@ -52,17 +52,48 @@ None — this is a net-new project. No existing files were modified.
 
 ---
 
-## Placeholders Summary
+## Placeholders Filled
 
-```
-[[CHERLYNN_PHONE]]      — e.g. "801-555-0100"
-[[CHERLYNN_PHONE_TEL]]  — e.g. "+18015550100" (E.164 for tel: links)
-[[CHERLYNN_EMAIL]]      — e.g. "cherlynn@jordan-cu.org"
-[[CHERLYNN_BIO]]        — 1–3 sentence bio about Cherlynn
-[[CHERLYNN_NPN]]        — National Producer Number (remove if not displaying)
-[[CHERLYNN_HEADSHOT]]   — replace with real photo path
-[[FORM_ENDPOINT]]       — URL that handles POST form submissions
-```
+| Placeholder | Status | Value |
+|---|---|---|
+| `CHERLYNN_PHONE` | ✅ Done | `801-349-5059` |
+| `CHERLYNN_PHONE_TEL` | ✅ Done | `+18013495059` |
+| `CHERLYNN_EMAIL` | ✅ Done | `pcherlynn@gmail.com` |
+| `CHERLYNN_BIO` | ✅ Done | 35+ years, A&B Health Advocates |
+| `CHERLYNN_NPN` | ✅ Omitted per request | Not displayed |
+| `CHERLYNN_HEADSHOT` | ⚠️ **Image file needed** | See below |
+| `FORM_ENDPOINT` | ⚠️ **Formspree ID needed** | See below |
+| A&B Health Advocates logo | ⚠️ **Image file needed** | See below |
+
+## Two remaining steps before launch
+
+### 1 — Add image files (2 files, drag-and-drop)
+
+Save these two files into the `public/images/` folder in this repo:
+
+| File to save | Source |
+|---|---|
+| `public/images/cherlynn-pearson.jpg` | The professional headshot photo you shared |
+| `public/images/ab-health-advocates-logo.png` | Crop just the A&B logo from the business card |
+
+The page already points to these exact paths — once the files exist, they'll show up automatically.
+
+### 2 — Activate the contact form (free, ~2 minutes)
+
+The form is pre-wired to **Formspree** (a free service — no backend code needed):
+
+1. Go to **[formspree.io](https://formspree.io)** and create a free account
+2. Click **New Form**, name it "JCU Medicare Consultation"
+3. Copy the **Form ID** it gives you — looks like `xpzgkwrq`
+4. Open `src/pages/medicare/index.astro` and find this line near the top:
+   ```
+   const FORM_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+   ```
+5. Replace `YOUR_FORM_ID` with your actual ID, e.g.:
+   ```
+   const FORM_ENDPOINT = 'https://formspree.io/f/xpzgkwrq';
+   ```
+6. Commit and push — form submissions will go straight to `pcherlynn@gmail.com`
 
 ---
 
