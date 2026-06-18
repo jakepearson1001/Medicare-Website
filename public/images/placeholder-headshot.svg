@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="400" viewBox="0 0 340 400" role="img" aria-label="Placeholder for Cherlynn Pearson headshot">
+  <rect width="340" height="400" fill="#e8f0eb"/>
+  <!-- Body -->
+  <rect x="90" y="280" width="160" height="120" rx="80" fill="#1b5c37" opacity="0.25"/>
+  <!-- Head -->
+  <circle cx="170" cy="190" r="75" fill="#1b5c37" opacity="0.2"/>
+  <circle cx="170" cy="185" r="65" fill="#c8a882"/>
+  <!-- Hair -->
+  <ellipse cx="170" cy="145" rx="68" ry="40" fill="#7a4f2d"/>
+  <!-- Face details -->
+  <circle cx="150" cy="180" r="6" fill="#5a3520"/>
+  <circle cx="190" cy="180" r="6" fill="#5a3520"/>
+  <path d="M155 205 Q170 218 185 205" stroke="#5a3520" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Jacket -->
+  <path d="M90 320 Q90 290 130 280 L170 295 L210 280 Q250 290 250 320 L250 400 L90 400Z" fill="#1b5c37" opacity="0.4"/>
+  <!-- Placeholder text -->
+  <text x="170" y="375" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="11" fill="#1b5c37" font-weight="600" opacity="0.8">[ Replace with Cherlynn's photo ]</text>
+</svg>

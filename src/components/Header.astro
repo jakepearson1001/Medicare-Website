@@ -1,0 +1,211 @@
+---
+const navItems = [
+  { label: 'Accounts',      href: 'https://jordan-cu.org/accounts/' },
+  { label: 'Loans & Cards', href: 'https://jordan-cu.org/loans/' },
+  { label: 'Mortgages',     href: 'https://jordan-cu.org/loans/mortgages/' },
+  { label: 'Business',      href: 'https://jordan-cu.org/business/' },
+  {
+    label: 'About Us',
+    href: 'https://jordan-cu.org/about-us/',
+    children: [
+      { label: 'About JCU',         href: 'https://jordan-cu.org/about-us/' },
+      { label: 'Locations & Hours', href: 'https://jordan-cu.org/about-us/locations-and-hours/' },
+      { label: 'Medicare Benefits', href: '/medicare/', current: true },
+    ],
+  },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <!-- Utility bar -->
+  <div class="header-utility">
+    <div class="container utility-inner">
+      <div class="utility-links">
+        <a href="https://jordan-cu.org/about-us/locations-and-hours/">Locations</a>
+        <span class="divider">|</span>
+        <a href="https://jordan-cu.org/rates/">Rates</a>
+        <span class="divider">|</span>
+        <a href="https://jordan-cu.org/" lang="en" aria-label="English">EN</a>
+        <span class="divider">|</span>
+        <a href="https://jordan-cu.org/es/" lang="es" aria-label="Español">ES</a>
+      </div>
+      <div class="utility-right">
+        <a href="https://jordan-cu.org/?s=" aria-label="Search" class="util-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </a>
+        <a href="https://jordan-cu.org/online-services/online-banking/" class="btn btn-primary btn-sm">Login</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo + Nav -->
+  <div class="header-main">
+    <div class="container main-inner">
+      <a href="https://jordan-cu.org/" class="site-logo" aria-label="Jordan Credit Union — Home">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" stroke="#1b5c37" stroke-width="2" fill="none"/>
+          <path d="M12 20 C12 14 18 10 20 10 C22 10 28 14 28 20 C28 26 22 30 20 30 C18 30 12 26 12 20Z" fill="#1b5c37" opacity="0.15"/>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="7" fill="#1b5c37">JCU</text>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-name">Jordan</span>
+          <span class="logo-sub">Credit Union</span>
+        </div>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul class="nav-list" role="list">
+          {navItems.map((item) => (
+            <li class={item.children ? 'nav-item has-dropdown' : 'nav-item'}>
+              <a
+                href={item.href}
+                class={`nav-link${currentPath.startsWith(item.href.replace('https://jordan-cu.org','')) ? ' active' : ''}`}
+                aria-haspopup={item.children ? 'true' : undefined}
+              >
+                {item.label}
+                {item.children && (
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true"><path d="M0 0l5 6 5-6z"/></svg>
+                )}
+              </a>
+              {item.children && (
+                <ul class="dropdown" role="list">
+                  {item.children.map((child) => (
+                    <li>
+                      <a href={child.href} class={child.current ? 'dropdown-link current' : 'dropdown-link'}>
+                        {child.label}
+                        {child.current && <span class="sr-only"> (current page)</span>}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Mobile hamburger -->
+      <button class="mobile-toggle" aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile nav drawer -->
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation" hidden>
+    <ul role="list">
+      {navItems.map((item) => (
+        <>
+          <li><a href={item.href} class="mobile-nav-link">{item.label}</a></li>
+          {item.children?.map((child) => (
+            <li><a href={child.href} class={`mobile-nav-link mobile-nav-link--sub${child.current ? ' current' : ''}`}>{child.label}</a></li>
+          ))}
+        </>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  /* ---- Utility bar ---- */
+  .site-header { position: sticky; top: 0; z-index: 200; background: var(--jcu-white); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+  .header-utility { background: var(--jcu-white); border-bottom: 1px solid var(--jcu-gray-mid); padding: 0.35rem 0; }
+  .utility-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .utility-links { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--jcu-gray-text); }
+  .utility-links a { color: var(--jcu-gray-text); font-size: 0.8rem; }
+  .utility-links a:hover { color: var(--jcu-green-mid); }
+  .divider { color: var(--jcu-gray-mid); }
+  .utility-right { display: flex; align-items: center; gap: 0.75rem; }
+  .util-search { color: var(--jcu-gray-text); display: flex; align-items: center; }
+  .util-search:hover { color: var(--jcu-green-mid); }
+  .btn-sm { padding: 0.4rem 1.1rem; font-size: 0.8rem; min-height: 34px; }
+
+  /* ---- Logo + main nav ---- */
+  .header-main { padding: 0.65rem 0; }
+  .main-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+
+  .site-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; flex-shrink: 0; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .logo-name { font-size: 1.3rem; font-weight: 800; color: var(--jcu-green); letter-spacing: -0.01em; }
+  .logo-sub { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--jcu-green-mid); }
+
+  /* Nav */
+  .main-nav { flex: 1; display: flex; justify-content: flex-end; }
+  .nav-list { display: flex; list-style: none; gap: 0; align-items: center; }
+  .nav-item { position: relative; }
+
+  .nav-link {
+    display: flex; align-items: center; gap: 0.3rem;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--jcu-dark); text-decoration: none;
+    transition: color 0.2s;
+    white-space: nowrap;
+  }
+  .nav-link:hover, .nav-link.active { color: var(--jcu-green-mid); text-decoration: none; }
+  .nav-link svg { transition: transform 0.2s; }
+  .has-dropdown:hover .nav-link svg { transform: rotate(180deg); }
+
+  /* Dropdown */
+  .dropdown {
+    position: absolute; top: 100%; left: 0;
+    background: var(--jcu-white); border-top: 3px solid var(--jcu-green-mid);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-radius: 0 0 8px 8px;
+    min-width: 210px; list-style: none; padding: 0.5rem 0;
+    opacity: 0; visibility: hidden; transform: translateY(-6px);
+    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  }
+  .has-dropdown:hover .dropdown,
+  .has-dropdown:focus-within .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+
+  .dropdown-link {
+    display: block; padding: 0.55rem 1.1rem;
+    font-size: 0.85rem; font-weight: 500; color: var(--jcu-dark);
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+  }
+  .dropdown-link:hover { background: var(--jcu-gray-light); color: var(--jcu-green-mid); text-decoration: none; }
+  .dropdown-link.current { color: var(--jcu-green-mid); font-weight: 700; }
+
+  /* Mobile toggle */
+  .mobile-toggle {
+    display: none; flex-direction: column; gap: 5px; background: none; border: none;
+    cursor: pointer; padding: 8px; min-height: 44px; min-width: 44px; align-items: center; justify-content: center;
+  }
+  .mobile-toggle span { display: block; width: 24px; height: 2px; background: var(--jcu-dark); border-radius: 2px; transition: 0.3s; }
+
+  /* Mobile nav */
+  .mobile-nav { background: var(--jcu-white); border-top: 1px solid var(--jcu-gray-mid); }
+  .mobile-nav ul { list-style: none; padding: 0.5rem 0; }
+  .mobile-nav-link {
+    display: block; padding: 0.75rem 1.25rem;
+    font-size: 0.9rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--jcu-dark); text-decoration: none; border-bottom: 1px solid var(--jcu-gray-light);
+  }
+  .mobile-nav-link--sub { padding-left: 2rem; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--jcu-gray-text); }
+  .mobile-nav-link.current { color: var(--jcu-green-mid); }
+  .mobile-nav-link:hover { color: var(--jcu-green-mid); background: var(--jcu-gray-light); }
+
+  /* Screen reader only */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+  @media (max-width: 900px) {
+    .main-nav { display: none; }
+    .mobile-toggle { display: flex; }
+    .utility-links { display: none; }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector('.mobile-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    mobileNav?.toggleAttribute('hidden');
+  });
+</script>
