@@ -22,6 +22,29 @@ import { Sheet, useToast, Empty, NumberInput } from '../components/ui.jsx';
 import { ExercisePickerSheet, DayPickerSheet } from '../components/pickers.jsx';
 import { IconPlus, IconTrash } from '../components/icons.jsx';
 
+// A date can briefly end up with more than one session record (from an earlier
+// save bug). Always pick the same one: a real workout with exercises beats a
+// rest day, and newer beats older.
+function pickSession(list) {
+  if (!list || !list.length) return null;
+  return [...list].sort((a, b) => {
+    const aw = !a.isRest && a.exercises?.length ? 1 : 0;
+    const bw = !b.isRest && b.exercises?.length ? 1 : 0;
+    if (aw !== bw) return bw - aw;
+    return (b.id || 0) - (a.id || 0);
+  })[0];
+}
+
+function groupByDate(sessions, pick = true) {
+  const groups = {};
+  (sessions || []).forEach((s) => {
+    (groups[s.date] || (groups[s.date] = [])).push(s);
+  });
+  const byDate = {};
+  for (const d of Object.keys(groups)) byDate[d] = pick ? pickSession(groups[d]) : groups[d][0];
+  return byDate;
+}
+
 function syncSets(ex) {
   const n = Math.max(1, Number(ex.targetSets) || 1);
   const reps = ex.repRange ? repMid(ex.repRange) : Number(ex.targetReps) || 0;
@@ -126,8 +149,7 @@ function CycleBanner({ cycle, iso, onEdit }) {
 function WeekView({ weekStartDate, setWeekStartDate, onPick, cycles, onEditCycles }) {
   const isos = weekDayISOs(weekStartDate);
   const sessions = useLiveQuery(() => db.sessions.where('date').anyOf(isos).toArray(), [isos.join(',')]);
-  const byDate = {};
-  (sessions || []).forEach((s) => (byDate[s.date] = s));
+  const byDate = groupByDate(sessions);
   const today = todayISO();
   const weekCycle = cycleForDate(cycles, isos[3]);
 
@@ -194,8 +216,7 @@ function MonthView({ monthDate, setMonthDate, onPick, cycles }) {
     () => db.sessions.where('date').between(firstISO, lastISO, true, true).toArray(),
     [firstISO, lastISO]
   );
-  const byDate = {};
-  (sessions || []).forEach((s) => (byDate[s.date] = s));
+  const byDate = groupByDate(sessions);
   const today = todayISO();
 
   const cells = [];
@@ -265,10 +286,10 @@ function DayEditor({ date, onClose, toast }) {
     if (!date) return undefined;
     (async () => {
       const all = await db.sessions.where('date').equals(date).toArray();
+      const session = pickSession(all);
       if (all.length > 1) {
-        await db.sessions.bulkDelete(all.slice(1).map((s) => s.id));
+        await db.sessions.bulkDelete(all.filter((s) => s.id !== session.id).map((s) => s.id));
       }
-      const session = all[0] || null;
       if (cancelled) return;
       setDraft({
         _date: date,
