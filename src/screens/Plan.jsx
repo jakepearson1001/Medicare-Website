@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db.js';
 import { generatePlan } from '../lib/plan.js';
@@ -253,30 +253,41 @@ function MonthView({ monthDate, setMonthDate, onPick, cycles }) {
 
 /* ---------------- Day editor ---------------- */
 function DayEditor({ date, onClose, toast }) {
-  const session = useLiveQuery(
-    () => (date ? db.sessions.where('date').equals(date).first() : null),
-    [date]
-  );
   const [draft, setDraft] = useState(null);
   const [exPicker, setExPicker] = useState(false);
   const [dayPicker, setDayPicker] = useState(false);
 
-  const loadedFor = draft?._date;
-  if (date && session !== undefined && loadedFor !== date) {
-    setDraft({
-      _date: date,
-      _id: session?.id ?? null,
-      title: session?.title || 'Workout',
-      type: session?.type || 'rest',
-      completed: session?.completed || false,
-      week: session?.week ?? 1,
-      dayOfWeek: session ? session.dayOfWeek : dowMon0(date),
-      planId: session?.planId ?? null,
-      exercises: session?.exercises?.map((e) => ({ ...e, sets: [...(e.sets || [])] })) || [],
-    });
-  }
+  // Load the exact day's workout directly (no stale live-query results), and
+  // clean up any duplicate records left by earlier saves.
+  useEffect(() => {
+    let cancelled = false;
+    setDraft(null);
+    if (!date) return undefined;
+    (async () => {
+      const all = await db.sessions.where('date').equals(date).toArray();
+      if (all.length > 1) {
+        await db.sessions.bulkDelete(all.slice(1).map((s) => s.id));
+      }
+      const session = all[0] || null;
+      if (cancelled) return;
+      setDraft({
+        _date: date,
+        _id: session?.id ?? null,
+        title: session?.title || 'Workout',
+        type: session?.type || 'rest',
+        completed: session?.completed || false,
+        week: session?.week ?? 1,
+        dayOfWeek: session ? session.dayOfWeek : dowMon0(date),
+        planId: session?.planId ?? null,
+        exercises: session?.exercises?.map((e) => ({ ...e, sets: [...(e.sets || [])] })) || [],
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [date]);
 
-  if (!date || !draft) return null;
+  if (!date) return null;
 
   const close = () => { onClose(); setDraft(null); };
   const update = (patch) => setDraft((d) => ({ ...d, ...patch }));
@@ -317,6 +328,10 @@ function DayEditor({ date, onClose, toast }) {
 
   return (
     <Sheet open={!!date} onClose={close} title={formatLong(date)}>
+      {!draft ? (
+        <div className="muted center" style={{ padding: 24 }}>Loading…</div>
+      ) : (
+        <>
       <div className="field">
         <label>Workout title</label>
         <input
@@ -380,6 +395,8 @@ function DayEditor({ date, onClose, toast }) {
         }}
       />
       <DayPickerSheet open={dayPicker} onClose={() => setDayPicker(false)} onPick={addDay} />
+        </>
+      )}
     </Sheet>
   );
 }
