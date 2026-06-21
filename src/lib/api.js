@@ -16,14 +16,20 @@ export async function analyzeFoodPhoto(dataUrl) {
   const mediaType = (meta.match(/data:(.*?);base64/) || [])[1] || 'image/jpeg';
 
   let res;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 60000);
   try {
     res = await fetch('/api/analyze-food', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ base64, mediaType }),
+      signal: controller.signal,
     });
   } catch (e) {
+    if (e.name === 'AbortError') throw new Error('TIMEOUT');
     throw new Error('OFFLINE_OR_NO_PROXY');
+  } finally {
+    clearTimeout(timer);
   }
 
   if (res.status === 404) throw new Error('NO_PROXY');
@@ -51,6 +57,7 @@ export async function analyzeFoodPhoto(dataUrl) {
 
 export function friendlyApiError(err) {
   const msg = err?.message || '';
+  if (msg.startsWith('TIMEOUT')) return 'Analysis took too long — enter foods manually below, or try again.';
   if (msg.startsWith('NO_KEY')) return 'No API key configured on the server — enter foods manually below.';
   if (msg.startsWith('NO_PROXY') || msg.startsWith('OFFLINE'))
     return 'Photo analysis needs the server proxy (and network). Enter foods manually below.';

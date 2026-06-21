@@ -100,6 +100,39 @@ export function MacroBar({ label, value, target, unit = '', color }) {
   );
 }
 
+/* ---- Number input that can actually be cleared ----
+   Keeps its own text so you can empty it (shows a 0 placeholder) and type
+   decimals like 0.5, while reporting a number to the parent. */
+export function NumberInput({ value, onChange, className = 'input', placeholder = '0', ...rest }) {
+  const [text, setText] = useState(value === 0 || value == null ? '' : String(value));
+  const ext = useRef(value);
+  useEffect(() => {
+    if (value !== ext.current) {
+      ext.current = value;
+      setText(value === 0 || value == null ? '' : String(value));
+    }
+  }, [value]);
+  return (
+    <input
+      {...rest}
+      className={className}
+      type="number"
+      inputMode={rest.inputMode || 'decimal'}
+      placeholder={placeholder}
+      value={text}
+      onChange={(e) => {
+        const t = e.target.value;
+        setText(t);
+        const n = t === '' ? 0 : Number(t);
+        if (!Number.isNaN(n)) {
+          ext.current = n;
+          onChange(n);
+        }
+      }}
+    />
+  );
+}
+
 /* ---- Stat tile ---- */
 export function Stat({ num, label, accent }) {
   return (

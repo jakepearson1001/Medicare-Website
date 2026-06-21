@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db.js';
 import { SPLIT_OPTIONS } from '../lib/exercises.js';
-import { useToast } from '../components/ui.jsx';
+import { useToast, NumberInput } from '../components/ui.jsx';
 import { IconBack } from '../components/icons.jsx';
 
 export default function Settings() {
@@ -63,19 +63,19 @@ export default function Settings() {
         <div className="row-2">
           <div className="field">
             <label>Calories (kcal)</label>
-            <input className="input" type="number" inputMode="numeric" value={form.dailyCalories} onChange={(e) => set({ dailyCalories: num(e.target.value) })} />
+            <NumberInput value={form.dailyCalories} onChange={(n) => set({ dailyCalories: n })} />
           </div>
           <div className="field">
             <label>Protein (g)</label>
-            <input className="input" type="number" inputMode="numeric" value={form.proteinTarget} onChange={(e) => set({ proteinTarget: num(e.target.value) })} />
+            <NumberInput value={form.proteinTarget} onChange={(n) => set({ proteinTarget: n })} />
           </div>
           <div className="field">
             <label>Carbs (g)</label>
-            <input className="input" type="number" inputMode="numeric" value={form.carbsTarget} onChange={(e) => set({ carbsTarget: num(e.target.value) })} />
+            <NumberInput value={form.carbsTarget} onChange={(n) => set({ carbsTarget: n })} />
           </div>
           <div className="field">
             <label>Fat (g)</label>
-            <input className="input" type="number" inputMode="numeric" value={form.fatTarget} onChange={(e) => set({ fatTarget: num(e.target.value) })} />
+            <NumberInput value={form.fatTarget} onChange={(n) => set({ fatTarget: n })} />
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function Settings() {
         </div>
         <div className="field">
           <label>Target weight (lbs)</label>
-          <input className="input" type="number" inputMode="numeric" value={form.goalWeight} onChange={(e) => set({ goalWeight: num(e.target.value) })} />
+          <NumberInput value={form.goalWeight} onChange={(n) => set({ goalWeight: n })} />
         </div>
         <div className="field">
           <label>Days per week</label>

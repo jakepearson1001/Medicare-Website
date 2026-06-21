@@ -18,7 +18,7 @@ import {
   DOW_SHORT,
   dowMon0,
 } from '../lib/dates.js';
-import { Sheet, useToast, Empty } from '../components/ui.jsx';
+import { Sheet, useToast, Empty, NumberInput } from '../components/ui.jsx';
 import { ExercisePickerSheet, DayPickerSheet } from '../components/pickers.jsx';
 import { IconPlus, IconTrash } from '../components/icons.jsx';
 
@@ -341,13 +341,13 @@ function DayEditor({ date, onClose, toast }) {
           </div>
           <div className="row-2">
             <Field label="Sets">
-              <input className="input" type="number" inputMode="numeric" value={ex.targetSets} onChange={(e) => updateEx(idx, { targetSets: Number(e.target.value) })} />
+              <NumberInput value={ex.targetSets} onChange={(n) => updateEx(idx, { targetSets: n })} />
             </Field>
             <Field label="Reps">
               <input className="input" value={ex.repRange || ex.targetReps || ''} onChange={(e) => updateEx(idx, { repRange: e.target.value })} placeholder="8–12" />
             </Field>
             <Field label="Weight (lbs)">
-              <input className="input" type="number" inputMode="numeric" value={ex.targetWeight} onChange={(e) => updateEx(idx, { targetWeight: Number(e.target.value) })} />
+              <NumberInput value={ex.targetWeight} onChange={(n) => updateEx(idx, { targetWeight: n })} />
             </Field>
             <Field label="RIR">
               <input className="input" value={ex.rir || ''} onChange={(e) => updateEx(idx, { rir: e.target.value })} placeholder="2" />
@@ -571,7 +571,7 @@ function SetupSheet({ open, onClose, settings, toast }) {
       </div>
       <div className="field">
         <label>Target weight (lbs)</label>
-        <input className="input" type="number" inputMode="numeric" value={form.goalWeight} onChange={(e) => set({ goalWeight: e.target.value })} />
+        <NumberInput value={form.goalWeight} onChange={(n) => set({ goalWeight: n })} />
       </div>
       <div className="field">
         <label>Training days per week</label>
