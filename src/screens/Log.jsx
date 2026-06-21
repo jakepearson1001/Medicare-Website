@@ -4,17 +4,9 @@ import { db } from '../db/db.js';
 import { todayISO, formatLong, addDays, fromISO, toISO } from '../lib/dates.js';
 import { logTotals, roundMacros } from '../lib/nutrition.js';
 import { analyzeFoodPhoto, friendlyApiError } from '../lib/api.js';
-import { MacroBar, Sheet, useToast, Empty } from '../components/ui.jsx';
+import { fileToResizedDataURL } from '../lib/image.js';
+import { MacroBar, Sheet, useToast, Empty, NumberInput } from '../components/ui.jsx';
 import { IconCamera, IconPlus, IconTrash } from '../components/icons.jsx';
-
-function readFileAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 const blankItem = () => ({ name: '', qty: 1, calories: 0, protein: 0, carbs: 0, fat: 0 });
 
@@ -42,7 +34,16 @@ export default function Log() {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    const photo = await readFileAsDataURL(file);
+    let photo;
+    try {
+      photo = await fileToResizedDataURL(file);
+    } catch {
+      photo = null;
+    }
+    if (!photo) {
+      setEditor({ id: null, date, photo: null, note: '', source: 'manual', items: [blankItem()], analyzing: false, notice: "Couldn't read that image — enter foods manually below." });
+      return;
+    }
     const draft = { id: null, date, photo, note: '', source: 'photo', items: [], analyzing: true, notice: '' };
     setEditor(draft);
     try {
@@ -236,19 +237,19 @@ function EntryEditorInner({ editor, onClose, toast }) {
           </div>
           <div className="row-2">
             <Labeled label="Qty / servings">
-              <input className="input" type="number" inputMode="decimal" value={item.qty} onChange={(e) => updateItem(i, 'qty', e.target.value)} />
+              <NumberInput value={item.qty} onChange={(n) => updateItem(i, 'qty', n)} />
             </Labeled>
             <Labeled label="Calories">
-              <input className="input" type="number" inputMode="numeric" value={item.calories} onChange={(e) => updateItem(i, 'calories', e.target.value)} />
+              <NumberInput value={item.calories} onChange={(n) => updateItem(i, 'calories', n)} />
             </Labeled>
             <Labeled label="Protein (g)">
-              <input className="input" type="number" inputMode="numeric" value={item.protein} onChange={(e) => updateItem(i, 'protein', e.target.value)} />
+              <NumberInput value={item.protein} onChange={(n) => updateItem(i, 'protein', n)} />
             </Labeled>
             <Labeled label="Carbs (g)">
-              <input className="input" type="number" inputMode="numeric" value={item.carbs} onChange={(e) => updateItem(i, 'carbs', e.target.value)} />
+              <NumberInput value={item.carbs} onChange={(n) => updateItem(i, 'carbs', n)} />
             </Labeled>
             <Labeled label="Fat (g)">
-              <input className="input" type="number" inputMode="numeric" value={item.fat} onChange={(e) => updateItem(i, 'fat', e.target.value)} />
+              <NumberInput value={item.fat} onChange={(n) => updateItem(i, 'fat', n)} />
             </Labeled>
           </div>
         </div>

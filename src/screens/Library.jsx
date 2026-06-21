@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db.js';
 import { MUSCLES, repMid } from '../lib/library.js';
-import { Sheet, useToast, Empty } from '../components/ui.jsx';
+import { Sheet, useToast, Empty, NumberInput } from '../components/ui.jsx';
 import { ExercisePickerSheet } from '../components/pickers.jsx';
 import { IconPlus, IconTrash } from '../components/icons.jsx';
 
@@ -136,7 +136,7 @@ function ExerciseEditor({ exercise, onClose, toast }) {
       <div className="row-2">
         <div className="field">
           <label>Default sets</label>
-          <input className="input" type="number" inputMode="numeric" value={draft.defaultSets} onChange={(e) => set({ defaultSets: e.target.value })} />
+          <NumberInput value={draft.defaultSets} onChange={(n) => set({ defaultSets: n })} />
         </div>
         <div className="field">
           <label>Rep range</label>
@@ -250,13 +250,13 @@ function DayBuilder({ day, onClose, toast }) {
           </div>
           <div className="row-2">
             <Field label="Sets">
-              <input className="input" type="number" inputMode="numeric" value={ex.targetSets} onChange={(e) => updateEx(i, { targetSets: e.target.value })} />
+              <NumberInput value={ex.targetSets} onChange={(n) => updateEx(i, { targetSets: n })} />
             </Field>
             <Field label="Reps">
               <input className="input" value={ex.repRange || ex.targetReps || ''} onChange={(e) => updateEx(i, { repRange: e.target.value })} placeholder="8–12" />
             </Field>
             <Field label="Weight (lbs)">
-              <input className="input" type="number" inputMode="numeric" value={ex.targetWeight} onChange={(e) => updateEx(i, { targetWeight: e.target.value })} />
+              <NumberInput value={ex.targetWeight} onChange={(n) => updateEx(i, { targetWeight: n })} />
             </Field>
             <Field label="RIR">
               <input className="input" value={ex.rir || ''} onChange={(e) => updateEx(i, { rir: e.target.value })} placeholder="2" />

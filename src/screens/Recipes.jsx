@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db.js';
-import { Sheet, useToast, Empty } from '../components/ui.jsx';
+import { Sheet, useToast, Empty, NumberInput } from '../components/ui.jsx';
 import { IconPlus, IconTrash, IconStar } from '../components/icons.jsx';
 
 function readFileAsDataURL(file) {
@@ -217,13 +217,7 @@ function RecipeEditor({ recipe, onClose, toast }) {
       <div className="row-2">
         <div className="field">
           <label>Servings</label>
-          <input
-            className="input"
-            type="number"
-            inputMode="numeric"
-            value={draft.servings}
-            onChange={(e) => set({ servings: e.target.value })}
-          />
+          <NumberInput value={draft.servings} onChange={(n) => set({ servings: n })} />
         </div>
         <div className="field">
           <label>Favorite</label>
@@ -250,34 +244,31 @@ function RecipeEditor({ recipe, onClose, toast }) {
       <div className="row-2">
         <div className="field">
           <label>Calories</label>
-          <input className="input" type="number" inputMode="numeric" value={draft.perServing.calories} onChange={(e) => setMacro('calories', e.target.value)} />
+          <NumberInput value={draft.perServing.calories} onChange={(n) => setMacro('calories', n)} />
         </div>
         <div className="field">
           <label>Protein (g)</label>
-          <input className="input" type="number" inputMode="numeric" value={draft.perServing.protein} onChange={(e) => setMacro('protein', e.target.value)} />
+          <NumberInput value={draft.perServing.protein} onChange={(n) => setMacro('protein', n)} />
         </div>
         <div className="field">
           <label>Carbs (g)</label>
-          <input className="input" type="number" inputMode="numeric" value={draft.perServing.carbs} onChange={(e) => setMacro('carbs', e.target.value)} />
+          <NumberInput value={draft.perServing.carbs} onChange={(n) => setMacro('carbs', n)} />
         </div>
         <div className="field">
           <label>Fat (g)</label>
-          <input className="input" type="number" inputMode="numeric" value={draft.perServing.fat} onChange={(e) => setMacro('fat', e.target.value)} />
+          <NumberInput value={draft.perServing.fat} onChange={(n) => setMacro('fat', n)} />
         </div>
       </div>
 
       <div className="card-title">Ingredients</div>
       {draft.ingredients.map((ing, i) => (
         <div key={i} className="flex" style={{ marginBottom: 8 }}>
-          <input
-            className="input"
+          <NumberInput
             style={{ width: 64 }}
-            type="number"
-            inputMode="decimal"
             placeholder="Qty"
             value={ing.qty}
-            onChange={(e) =>
-              set({ ingredients: draft.ingredients.map((x, j) => (j === i ? { ...x, qty: e.target.value } : x)) })
+            onChange={(n) =>
+              set({ ingredients: draft.ingredients.map((x, j) => (j === i ? { ...x, qty: n } : x)) })
             }
           />
           <input
