@@ -21,10 +21,19 @@ import Dexie from 'dexie';
  *
  * Exercise (embedded in a session or template)
  *   { name, muscle, targetSets, targetReps, targetWeight,
+ *     repRange (string|null), rir (string|null),
  *     sets: [ { reps, weight, done } ] }
  *
- * WorkoutTemplate
- *   { id, name, exercises: [ Exercise (targets only) ], createdAt }
+ * LibraryExercise (exercises store — the reusable exercise library)
+ *   { id, name, muscle, defaultSets, repRange, notes, isCustom }
+ *
+ * DayTemplate (templates store — named "days" like Push / Upper A)
+ *   { id, name, type (string label), notes,
+ *     exercises: [ Exercise (targets only, + repRange/rir) ], createdAt }
+ *
+ * Cycle (cycles store — a training/diet phase spanning dates)
+ *   { id, name, type ('Bulk'|'Cut'|'Maintenance'|'Strength'|...),
+ *     color (hex), startDate (ISO), endDate (ISO), note }
  *
  * Recipe
  *   { id, name, photo (dataURL|null), tags: [string], servings,
@@ -53,6 +62,19 @@ db.version(1).stores({
   recipes: '++id, favorite, createdAt',
   mealPlans: '++id, weekStart',
   foodLog: '++id, date, timestamp',
+});
+
+// v2 adds the exercise library and training cycles.
+db.version(2).stores({
+  settings: 'id',
+  plans: '++id, createdAt',
+  sessions: '++id, planId, date, week, completed',
+  templates: '++id, createdAt',
+  recipes: '++id, favorite, createdAt',
+  mealPlans: '++id, weekStart',
+  foodLog: '++id, date, timestamp',
+  exercises: '++id, muscle, name',
+  cycles: '++id, startDate',
 });
 
 export default db;

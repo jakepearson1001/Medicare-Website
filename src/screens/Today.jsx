@@ -112,7 +112,8 @@ export default function Today() {
                 <div className="between" style={{ marginBottom: 6 }}>
                   <div style={{ fontWeight: 600 }}>{ex.name}</div>
                   <div className="faint" style={{ fontSize: 13 }}>
-                    {ex.targetSets}×{ex.targetReps} @ {ex.targetWeight} lbs
+                    {ex.targetSets}×{ex.repRange || ex.targetReps} @ {ex.targetWeight} lbs
+                    {ex.rir ? ` · RIR ${ex.rir}` : ''}
                   </div>
                 </div>
                 {ex.sets.map((set, setIdx) => (

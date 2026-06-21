@@ -8,7 +8,11 @@ no accounts — all your data lives locally on your device in IndexedDB.
   service worker), one serverless proxy for the photo-calorie feature.
 - **Works offline** for everything except the photo → calorie analysis (which
   needs the network + the Anthropic API).
-- **5 bottom tabs:** Today · Plan · Meal Prep · Recipes · Log (+ Settings).
+- **6 bottom tabs:** Today · Plan · Library · Meals · Recipes · Log (+ Settings).
+- **Library** of exercises and reusable "day" templates (push/pull/etc.) you
+  build once and drop into any day of the plan.
+- **Training cycles** (bulk / cut / etc.) with editable date ranges, shown as a
+  banner in the week view and a color-coded band across the month calendar.
 - On first run it seeds realistic sample data so every screen is usable
   immediately — edit or delete any of it.
 
@@ -99,7 +103,9 @@ analysis. Without it, manual entry still works everywhere.
 | `settings`   | targets (calories/macros), units, goal, days/week, split, start date |
 | `plans`      | the 52-week plan metadata (goal, split, start date) |
 | `sessions`   | one record per calendar day: title, week, type, `exercises[]` with per-set reps/weight/done, `completed` |
-| `templates`  | reusable workout templates |
+| `templates`  | reusable "day" templates (push/pull/etc.) used by the Library |
+| `exercises`  | the exercise library (seeded suggestions + your own) |
+| `cycles`     | training/diet phases: name, type, color, start/end dates |
 | `recipes`    | name, photo, tags, ingredients, steps, servings, per-serving macros, favorite |
 | `mealPlans`  | one per week: 7 days × {breakfast, lunch, dinner, snacks} → recipe refs + shopping-list checkmarks |
 | `foodLog`    | per entry: photo, foods with macros, timestamp, date |

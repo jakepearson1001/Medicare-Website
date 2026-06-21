@@ -2,6 +2,12 @@ import { db } from './db.js';
 import { generatePlan } from '../lib/plan.js';
 import { mondayOf, toISO, addDays, todayISO } from '../lib/dates.js';
 import { MEAL_SLOTS } from '../lib/nutrition.js';
+import {
+  EXERCISE_SUGGESTIONS,
+  DAY_TEMPLATE_SEEDS,
+  PHASE_SEEDS,
+  colorForType,
+} from '../lib/library.js';
 
 export const DEFAULT_SETTINGS = {
   id: 1,
@@ -186,27 +192,8 @@ export async function ensureSeeded() {
     await db.sessions.put(s);
   }
 
-  // 2) Templates (reusable workouts)
-  await db.templates.bulkAdd([
-    {
-      name: 'Quick Push (30 min)',
-      createdAt: Date.now(),
-      exercises: [
-        { name: 'Barbell Bench Press', muscle: 'Chest', targetSets: 4, targetReps: 6, targetWeight: 155, sets: [] },
-        { name: 'Overhead Press', muscle: 'Shoulders', targetSets: 3, targetReps: 8, targetWeight: 85, sets: [] },
-        { name: 'Tricep Pushdown', muscle: 'Triceps', targetSets: 3, targetReps: 12, targetWeight: 45, sets: [] },
-      ],
-    },
-    {
-      name: 'Full Body Express',
-      createdAt: Date.now(),
-      exercises: [
-        { name: 'Back Squat', muscle: 'Legs', targetSets: 4, targetReps: 6, targetWeight: 175, sets: [] },
-        { name: 'Barbell Bench Press', muscle: 'Chest', targetSets: 3, targetReps: 8, targetWeight: 150, sets: [] },
-        { name: 'Barbell Row', muscle: 'Back', targetSets: 3, targetReps: 8, targetWeight: 125, sets: [] },
-      ],
-    },
-  ]);
+  // 2) Library, day templates, and cycles
+  await ensureLibrarySeeded();
 
   // 3) Recipes — capture ids for the meal plan
   const recipeIds = [];
@@ -240,4 +227,45 @@ export async function ensureSeeded() {
       { name: 'Black coffee', qty: 1, calories: 5, protein: 0, carbs: 1, fat: 0 },
     ],
   });
+}
+
+/**
+ * Seed the exercise library, day templates, and training cycles. Idempotent:
+ * runs once per device (guarded by settings.librarySeeded) so existing installs
+ * pick up the new content on upgrade without duplicating it.
+ */
+export async function ensureLibrarySeeded() {
+  const settings = await db.settings.get(1);
+  if (settings?.librarySeeded) return;
+
+  if ((await db.exercises.count()) === 0) {
+    await db.exercises.bulkAdd(
+      EXERCISE_SUGGESTIONS.map((e) => ({ ...e, notes: '', isCustom: false }))
+    );
+  }
+
+  // Add any seed day templates that aren't already present (by name), so
+  // existing installs gain the phase days without duplicating them.
+  const existingNames = new Set((await db.templates.toArray()).map((t) => t.name));
+  const missing = DAY_TEMPLATE_SEEDS.filter((t) => !existingNames.has(t.name));
+  if (missing.length) {
+    await db.templates.bulkAdd(missing.map((t) => ({ ...t, createdAt: Date.now() })));
+  }
+
+  if ((await db.cycles.count()) === 0) {
+    const plan = await db.plans.orderBy('createdAt').last();
+    const start = plan?.startDate || settings?.startDate || todayISO();
+    const startMonday = mondayOf(start);
+    const cycles = PHASE_SEEDS.map((p) => ({
+      name: p.name,
+      type: p.type,
+      color: colorForType(p.type),
+      startDate: toISO(addDays(startMonday, (p.weekStart - 1) * 7)),
+      endDate: toISO(addDays(startMonday, p.weekEnd * 7 - 1)),
+      note: p.note,
+    }));
+    await db.cycles.bulkAdd(cycles);
+  }
+
+  if (settings) await db.settings.update(1, { librarySeeded: true });
 }

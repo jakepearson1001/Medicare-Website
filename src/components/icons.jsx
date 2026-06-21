@@ -91,3 +91,9 @@ export const IconBack = (p) => (
     <path d="m15 18-6-6 6-6" />
   </svg>
 );
+
+export const IconLibrary = (p) => (
+  <svg {...base} {...p}>
+    <path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11" />
+  </svg>
+);

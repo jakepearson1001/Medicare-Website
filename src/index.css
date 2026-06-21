@@ -438,12 +438,29 @@ h4 {
   padding: 18px 16px calc(24px + var(--safe-bottom));
   animation: slideup 0.2s ease;
 }
+.sheet-grab {
+  margin: -8px -16px 4px;
+  padding: 10px 0;
+  cursor: grab;
+  touch-action: none;
+}
 .sheet-handle {
-  width: 40px;
-  height: 4px;
+  width: 44px;
+  height: 5px;
   border-radius: 999px;
   background: var(--border);
-  margin: 0 auto 16px;
+  margin: 0 auto;
+}
+.sheet-close {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 999px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1;
 }
 @keyframes fade {
   from {
