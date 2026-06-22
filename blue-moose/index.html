@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ====================================================
+       SEO & Open Graph
+  ==================================================== -->
+  <title>Blue Moose Detailing — Mobile Auto Detailing in Utah</title>
+  <meta name="description" content="Premium mobile auto detailing in Salt Lake, Utah & Davis Counties. We come to you — showroom shine at your driveway. Book Express, Standard, or Premium detail today." />
+  <meta property="og:title" content="Blue Moose Detailing — Mobile Auto Detailing in Utah" />
+  <meta property="og:description" content="Showroom shine, at your driveway. Hand detailing brought to your home or office." />
+  <meta property="og:type" content="website" />
+  <!-- og:image: swap in a real photo URL when available -->
+  <meta property="og:image" content="REPLACE_WITH_SOCIAL_IMAGE_URL" />
+
+  <!-- ====================================================
+       Google Fonts
+  ==================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ====================================================
+       Calendly embed stylesheet (inline widget)
+       https://help.calendly.com/hc/en-us/articles/223147027
+  ==================================================== -->
+  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+
+  <style>
+    /* =====================================================
+       CONFIG — swap these CSS custom properties to re-skin
+    ===================================================== */
+    :root {
+      --navy:        #16284C;
+      --navy-deep:   #101e38;
+      --cream:       #F1ECE0;
+      --tan:         #E5DDC9;
+      --gold:        #B8902F;
+      --gold-soft:   #cfa84a;
+      --silver:      #C8CDD4;
+      --ink:         #1d2b4a;
+      --ink-soft:    #5a6480;
+      --muted:       #8b95ad;
+      --rule-light:  rgba(255,255,255,.13);
+      --hi:          rgba(184,144,47,.10);
+      --radius:      14px;
+      --transition:  .35s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* =====================================================
+       Reset & base
+    ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img, svg { display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* =====================================================
+       Utility
+    ===================================================== */
+    .navy-bg {
+      background: var(--navy);
+      background-image:
+        repeating-linear-gradient(45deg,  rgba(255,255,255,.018) 0 1px, transparent 1px 36px),
+        repeating-linear-gradient(-45deg, rgba(255,255,255,.018) 0 1px, transparent 1px 36px);
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 14px 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+    }
+    .btn-gold:hover { background: var(--gold-soft); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(184,144,47,.35); }
+    .btn-outline {
+      background: transparent;
+      color: var(--gold);
+      border: 1.5px solid var(--gold);
+    }
+    .btn-outline:hover { background: rgba(184,144,47,.12); }
+    .btn-nav {
+      background: var(--gold);
+      color: #fff;
+      font-size: 13px;
+      padding: 10px 22px;
+    }
+    .btn-nav:hover { background: var(--gold-soft); }
+
+    .section-eyebrow {
+      font-size: 11.5px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.12;
+      margin-bottom: 16px;
+    }
+    .section-heading em { font-style: italic; color: var(--gold); }
+    .section-sub {
+      font-size: 16px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      max-width: 560px;
+    }
+
+    /* scroll-reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* =====================================================
+       NAVBAR
+    ===================================================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--navy);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 0 40px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      box-shadow: 0 2px 20px rgba(10,20,45,.3);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-logo { width: 36px; height: 36px; flex: 0 0 auto; }
+    .nav-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: .02em;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--silver);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    /* hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--silver);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 62px 0 0 0;
+      background: var(--navy-deep);
+      z-index: 99;
+      flex-direction: column;
+      padding: 32px 28px;
+      gap: 28px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 20px;
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+    }
+    .mobile-menu .btn-gold { align-self: flex-start; margin-top: 8px; }
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+    .hero {
+      padding: 84px 40px 72px;
+    }
+    .hero-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      gap: 56px;
+      align-items: flex-start;
+    }
+    .hero-crest {
+      flex: 0 0 auto;
+      width: 120px;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,.4));
+    }
+    .hero-content { flex: 1; }
+    .hero-eyebrow {
+      font-size: 11.5px;
+      letter-spacing: .34em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(40px, 6vw, 62px);
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.03;
+      margin-bottom: 22px;
+      letter-spacing: -.01em;
+    }
+    .hero-headline em { display: block; font-style: italic; color: var(--gold); }
+    .hero-subhead {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #c4ccdb;
+      max-width: 520px;
+      margin-bottom: 36px;
+    }
+    .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .hero-divider { height: 1px; background: var(--rule-light); margin: 48px 0 36px; max-width: 960px; margin-left: auto; margin-right: auto; }
+
+    .trust-strip {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .trust-item h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+    .trust-item p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* =====================================================
+       PRICING
+    ===================================================== */
+    .pricing-section {
+      padding: 80px 40px;
+      background: var(--cream);
+    }
+    .pricing-header {
+      max-width: 960px;
+      margin: 0 auto 48px;
+    }
+    .pricing-table {
+      max-width: 960px;
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 30px rgba(20,30,58,.1);
+      border: 1px solid rgba(29,43,74,.1);
+    }
+
+    /* column grid: vehicle name + 3 price cols */
+    .pt-row {
+      display: grid;
+      grid-template-columns: 1fr 140px 140px 160px;
+      align-items: stretch;
+    }
+    .pt-head { background: var(--ink); }
+    .pt-body { background: #fff; }
+    .pt-body:nth-child(odd) { background: #faf9f5; }
+    .pt-body:last-child { border-bottom: none; }
+    .pt-body { border-bottom: 1px solid rgba(29,43,74,.07); }
+
+    .pt-cell {
+      padding: 20px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pt-cell.left { justify-content: flex-start; gap: 18px; }
+
+    /* head cells */
+    .col-hd {
+      font-size: 10.5px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--silver);
+      text-align: center;
+      line-height: 1.3;
+    }
+    .col-hd .sub {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .col-hd.premium { color: var(--gold); }
+    .col-hd.premium .sub { color: var(--gold-soft); }
+
+    /* premium column highlight */
+    .pt-head .pt-cell.premium-col {
+      background: rgba(184,144,47,.18);
+      border-top: 3px solid var(--gold);
+    }
+    .pt-body .pt-cell.premium-col {
+      background: rgba(184,144,47,.06);
+    }
+
+    .veh-icon { width: 46px; height: 32px; flex: 0 0 auto; color: var(--ink-soft); }
+    .veh-name-wrap {}
+    .veh-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+    .veh-tags {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 3px;
+      letter-spacing: .01em;
+    }
+
+    .price-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1;
+      text-align: center;
+    }
+    .price-val sup { font-size: 17px; top: -.6em; position: relative; margin-right: 1px; }
+    .price-val.premium-price { color: var(--gold); }
+
+    .pricing-note {
+      max-width: 960px;
+      margin: 20px auto 0;
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+    .pricing-note strong { color: var(--ink); font-weight: 600; }
+
+    /* =====================================================
+       WHAT'S INCLUDED
+    ===================================================== */
+    .included-section {
+      background: var(--tan);
+      padding: 80px 40px;
+    }
+    .included-header {
+      max-width: 960px;
+      margin: 0 auto 52px;
+    }
+    .included-grid {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+    }
+    .inc-card {
+      background: var(--cream);
+      border-radius: 10px;
+      padding: 34px 30px 36px;
+      box-shadow: 0 2px 16px rgba(20,30,58,.07);
+    }
+    .inc-card-label {
+      font-size: 11px;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .inc-card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(29,43,74,.12);
+    }
+    .inc-card ul { display: flex; flex-direction: column; gap: 11px; }
+    .inc-card li {
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.4;
+      padding-left: 20px;
+      position: relative;
+    }
+    .inc-card li::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 7px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+    .inc-card li.plus { font-weight: 600; color: var(--gold); }
+    .inc-card li.plus::before { background: var(--ink); }
+
+    /* =====================================================
+       BOOK + PAY
+    ===================================================== */
+    .book-section {
+      padding: 80px 40px;
+      background: var(--cream);
+    }
+    .book-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .book-header { margin-bottom: 48px; }
+
+    /* step strip */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 52px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+    }
+    .step-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+    .step-text h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+    .step-text p { font-size: 13px; color: var(--ink-soft); }
+    .step-arrow {
+      flex: 0 0 40px;
+      text-align: center;
+      color: var(--gold);
+      font-size: 22px;
+    }
+
+    /* Calendly inline widget */
+    .calendly-wrap {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 30px rgba(20,30,58,.1);
+      border: 1px solid rgba(29,43,74,.08);
+      margin-bottom: 40px;
+    }
+    /* NOTE: swap CALENDLY_URL below with your real link, e.g. https://calendly.com/bluemoose/detail */
+    .calendly-inline-widget { min-height: 700px; }
+
+    /* pay card */
+    .pay-card {
+      background: var(--navy);
+      border-radius: 12px;
+      padding: 40px 44px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .pay-card-text { flex: 1; min-width: 200px; }
+    .pay-card-text h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .pay-card-text p { font-size: 14.5px; color: #c4ccdb; line-height: 1.55; }
+    .pay-card-actions { display: flex; gap: 14px; flex-wrap: wrap; flex: 0 0 auto; }
+    /* NOTE: swap SQUARE_PAYMENT_LINK below with your real Square payment link */
+    /* If using Square Web Payments SDK instead, replace SQUARE_APP_ID and SQUARE_LOCATION_ID */
+
+    /* =====================================================
+       FAQ
+    ===================================================== */
+    .faq-section {
+      background: var(--tan);
+      padding: 80px 40px;
+    }
+    .faq-inner {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .faq-header { margin-bottom: 48px; }
+    .faq-list { display: flex; flex-direction: column; gap: 0; }
+    .faq-item {
+      border-bottom: 1px solid rgba(29,43,74,.12);
+    }
+    .faq-item:first-child { border-top: 1px solid rgba(29,43,74,.12); }
+    .faq-q {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+    }
+    .faq-q span {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+    .faq-icon {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 300;
+      transition: transform .3s;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .35s ease;
+    }
+    .faq-a p {
+      font-size: 15px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      padding-bottom: 22px;
+    }
+    .faq-item.open .faq-a { max-height: 300px; }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    .footer {
+      padding: 52px 40px 40px;
+    }
+    .footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 40px;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 16px; }
+    .footer-logo { width: 56px; height: 56px; flex: 0 0 auto; }
+    .footer-brand-text h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .footer-brand-text p { font-size: 13px; color: var(--muted); }
+
+    .footer-fineprint {
+      font-size: 12px;
+      color: #6b778f;
+      line-height: 1.65;
+    }
+    .footer-cta { text-align: right; flex: 0 0 auto; }
+    .footer-cta-line {
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      color: var(--gold);
+      margin-bottom: 16px;
+      white-space: nowrap;
+    }
+    .footer-cta-line em { font-style: italic; }
+    .footer-copy {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule-light);
+      font-size: 12px;
+      color: #4a566e;
+      text-align: center;
+    }
+
+    /* mobile sticky book button */
+    .sticky-book {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      box-shadow: 0 8px 28px rgba(184,144,47,.5);
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+    @media (max-width: 900px) {
+      .included-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .navbar { padding: 0 20px; }
+      .nav-links, .nav-right .btn-nav { display: none; }
+      .hamburger { display: flex; }
+
+      .hero { padding: 52px 24px 52px; }
+      .hero-inner { flex-direction: column; gap: 28px; }
+      .hero-crest { width: 90px; }
+
+      .trust-strip { grid-template-columns: 1fr; gap: 18px; }
+
+      .pricing-section, .included-section, .book-section, .faq-section { padding: 60px 24px; }
+
+      .pt-row { grid-template-columns: 1fr 100px 100px 110px; }
+      .pt-cell { padding: 16px 10px; }
+      .price-val { font-size: 26px; }
+      .veh-icon { width: 36px; height: 24px; }
+      .veh-name { font-size: 17px; }
+      .veh-tags { display: none; }
+
+      .included-grid { grid-template-columns: 1fr; }
+
+      .steps { flex-direction: column; align-items: flex-start; }
+      .step-arrow { display: none; }
+
+      .pay-card { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+
+      .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+      .footer-cta { text-align: left; }
+      .footer-cta-line { white-space: normal; }
+
+      .sticky-book { display: flex; }
+    }
+
+    @media (max-width: 500px) {
+      .pt-row { grid-template-columns: 1fr 88px 88px 96px; }
+      .price-val { font-size: 22px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .navbar, .sticky-book, .mobile-menu { display: none !important; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     CONFIGURATION — edit these values before going live
+============================================================ -->
+<script>
+  // ── SWAP THESE VALUES BEFORE PUBLISHING ──────────────────────
+  const CONFIG = {
+    // Your Calendly scheduling link (create one at calendly.com)
+    CALENDLY_URL: "https://calendly.com/bluemoose/detail",
+
+    // Your Square payment link (create at squareup.com/online-checkout)
+    SQUARE_PAYMENT_LINK: "https://square.link/u/REPLACE_WITH_SQUARE_LINK",
+
+    // Optional: Square deposit link (e.g. $25 hold)
+    SQUARE_DEPOSIT_LINK: "https://square.link/u/REPLACE_WITH_DEPOSIT_LINK",
+
+    // Contact info
+    PHONE: "(801) 555-0100",
+    EMAIL: "hello@bluemoosedetailing.com",
+  };
+  // ─────────────────────────────────────────────────────────────
+</script>
+
+
+<!-- ============================================================
+     STICKY NAVBAR
+============================================================ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a class="nav-brand" href="#hero" aria-label="Blue Moose Detailing home">
+    <svg class="nav-logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="60" cy="60" r="58" fill="#1b2c4f"/>
+      <circle cx="60" cy="60" r="52.5" fill="none" stroke="#aeb7cc" stroke-width="1.2" opacity=".55"/>
+      <g fill="none" stroke="#cdd4e2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <g id="nh">
+          <path d="M56,52 C50,44 47.5,40 45,31 C43.5,25 42.5,21 41,15"/>
+          <path d="M47,38 C43,37 40,35 37,31"/>
+          <path d="M45,32 C41,32 38,31 34.5,28.5"/>
+          <path d="M41,15 C40,12.5 38.5,11.5 36.5,10"/>
+          <path d="M41,15 C42,12.5 43,12 45,11.5"/>
+        </g>
+        <use href="#nh" transform="translate(120,0) scale(-1,1)"/>
+      </g>
+      <path d="M52,55 C46,53.5 41.5,56 41,61.5 C44.5,59.5 48.5,57.5 53,57 Z" fill="#cdd4e2"/>
+      <path d="M68,55 C74,53.5 78.5,56 79,61.5 C75.5,59.5 71.5,57.5 67,57 Z" fill="#cdd4e2"/>
+      <path d="M60,53 C53,53 48,57 47,64 C46,72 51,83 60,93 C69,83 74,72 73,64 C72,57 67,53 60,53 Z" fill="#cdd4e2"/>
+      <ellipse cx="54.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(20 54.5 65.5)"/>
+      <ellipse cx="65.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(-20 65.5 65.5)"/>
+      <ellipse cx="60" cy="85" rx="5.2" ry="4" fill="#1b2c4f"/>
+    </svg>
+    <span class="nav-name">Blue Moose Detailing</span>
+  </a>
+
+  <div class="nav-links">
+    <a href="#pricing">Pricing</a>
+    <a href="#included">What's Included</a>
+    <a href="#book">Book</a>
+    <a href="#faq">FAQ</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="#book" class="btn btn-nav" id="nav-book-btn">Book Now</a>
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobile navigation">
+  <a href="#pricing"  class="mobile-link">Pricing</a>
+  <a href="#included" class="mobile-link">What's Included</a>
+  <a href="#book"     class="mobile-link">Book</a>
+  <a href="#faq"      class="mobile-link">FAQ</a>
+  <a href="#book" class="btn btn-gold">Book Now</a>
+</div>
+
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section id="hero" class="hero navy-bg">
+  <div class="hero-inner">
+    <svg class="hero-crest reveal" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="Blue Moose Detailing crest">
+      <circle cx="60" cy="60" r="58" fill="#1b2c4f"/>
+      <circle cx="60" cy="60" r="58" fill="none" stroke="#0d1830" stroke-width="2"/>
+      <circle cx="60" cy="60" r="52.5" fill="none" stroke="#aeb7cc" stroke-width="1.2" opacity=".55"/>
+      <g fill="none" stroke="#cdd4e2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <g id="h2">
+          <path d="M56,52 C50,44 47.5,40 45,31 C43.5,25 42.5,21 41,15"/>
+          <path d="M47,38 C43,37 40,35 37,31"/>
+          <path d="M45,32 C41,32 38,31 34.5,28.5"/>
+          <path d="M41,15 C40,12.5 38.5,11.5 36.5,10"/>
+          <path d="M41,15 C42,12.5 43,12 45,11.5"/>
+        </g>
+        <use href="#h2" transform="translate(120,0) scale(-1,1)"/>
+      </g>
+      <path d="M52,55 C46,53.5 41.5,56 41,61.5 C44.5,59.5 48.5,57.5 53,57 Z" fill="#cdd4e2"/>
+      <path d="M68,55 C74,53.5 78.5,56 79,61.5 C75.5,59.5 71.5,57.5 67,57 Z" fill="#cdd4e2"/>
+      <path d="M60,53 C53,53 48,57 47,64 C46,72 51,83 60,93 C69,83 74,72 73,64 C72,57 67,53 60,53 Z" fill="#cdd4e2"/>
+      <ellipse cx="54.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(20 54.5 65.5)"/>
+      <ellipse cx="65.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(-20 65.5 65.5)"/>
+      <ellipse cx="60" cy="85" rx="5.2" ry="4" fill="#1b2c4f"/>
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow reveal reveal-delay-1">Blue Moose Detailing &middot; Mobile &middot; Utah</div>
+      <h1 class="hero-headline reveal reveal-delay-1">
+        Showroom shine,<em>at your driveway.</em>
+      </h1>
+      <p class="hero-subhead reveal reveal-delay-2">
+        Premium hand detailing brought directly to your home or office. Professional results without leaving your driveway.
+      </p>
+      <div class="hero-cta reveal reveal-delay-3">
+        <!-- Triggers Calendly popup -->
+        <button class="btn btn-gold" onclick="openCalendly()">Book Your Detail</button>
+        <a href="#pricing" class="btn btn-outline">View Pricing</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-divider"></div>
+
+  <div class="trust-strip">
+    <div class="trust-item reveal reveal-delay-1">
+      <h4>We come to you</h4>
+      <p>Salt Lake &middot; Utah &middot; Davis Counties</p>
+    </div>
+    <div class="trust-item reveal reveal-delay-2">
+      <h4>Insured &amp; guaranteed</h4>
+      <p>5-star satisfaction</p>
+    </div>
+    <div class="trust-item reveal reveal-delay-3">
+      <h4>Hand-crafted finish</h4>
+      <p>Every vehicle, every time</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     PRICING
+============================================================ -->
+<section id="pricing" class="pricing-section">
+  <div class="pricing-header reveal">
+    <div class="section-eyebrow">Transparent Pricing</div>
+    <h2 class="section-heading">Simple, <em>honest rates.</em></h2>
+    <p class="section-sub">No hidden fees. No surprises. Just a spotless vehicle waiting for you.</p>
+  </div>
+
+  <div class="pricing-table reveal">
+    <!-- Header row -->
+    <div class="pt-row pt-head">
+      <div class="pt-cell left" style="color:var(--silver);font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;">Vehicle</div>
+      <div class="pt-cell">
+        <div class="col-hd">Express<span class="sub">Exterior only</span></div>
+      </div>
+      <div class="pt-cell">
+        <div class="col-hd">Standard<span class="sub">Interior + Exterior</span></div>
+      </div>
+      <div class="pt-cell premium-col">
+        <div class="col-hd premium">Premium &#9733;<span class="sub">Full deep clean</span></div>
+      </div>
+    </div>
+
+    <!-- Sedan -->
+    <div class="pt-row pt-body">
+      <div class="pt-cell left">
+        <svg class="veh-icon" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 28 L9 16 C10 13 13 11 17 11 L40 11 C45 11 49 13 53 18 L58 25 C59 27 59 28 57 28"/>
+          <path d="M9 28 L57 28"/>
+          <circle cx="20" cy="29" r="4.5"/><circle cx="46" cy="29" r="4.5"/>
+        </svg>
+        <div class="veh-name-wrap">
+          <div class="veh-name">Sedan</div>
+          <div class="veh-tags">Coupe &middot; Compact &middot; Hatchback</div>
+        </div>
+      </div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>99</div></div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>189</div></div>
+      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>275</div></div>
+    </div>
+
+    <!-- SUV -->
+    <div class="pt-row pt-body">
+      <div class="pt-cell left">
+        <svg class="veh-icon" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 28 L7 16 C8 13 11 11 15 11 L46 11 C51 11 55 13 58 17 L60 25 C60 27 60 28 58 28"/>
+          <path d="M9 28 L58 28"/>
+          <path d="M22 11 L22 28 M38 11 L38 28"/>
+          <circle cx="19" cy="29" r="4.5"/><circle cx="47" cy="29" r="4.5"/>
+        </svg>
+        <div class="veh-name-wrap">
+          <div class="veh-name">SUV</div>
+          <div class="veh-tags">Crossover &middot; 2-Row &middot; Mid-size</div>
+        </div>
+      </div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>119</div></div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>219</div></div>
+      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>325</div></div>
+    </div>
+
+    <!-- Truck & Large SUV -->
+    <div class="pt-row pt-body">
+      <div class="pt-cell left">
+        <svg class="veh-icon" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 28 L4 14 C4 12 5 11 7 11 L30 11 L30 28"/>
+          <path d="M30 16 L44 16 C47 16 50 18 53 22 L59 25 C60 26 60 28 58 28"/>
+          <path d="M8 28 L58 28"/>
+          <circle cx="18" cy="29" r="4.5"/><circle cx="47" cy="29" r="4.5"/>
+        </svg>
+        <div class="veh-name-wrap">
+          <div class="veh-name">Truck &amp; Large SUV</div>
+          <div class="veh-tags">Pickup &middot; 3-Row &middot; Suburban &middot; Tahoe</div>
+        </div>
+      </div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>149</div></div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>259</div></div>
+      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>389</div></div>
+    </div>
+  </div>
+
+  <p class="pricing-note reveal">
+    <strong>Note:</strong> Prices reflect standard-condition vehicles. Add-ons for heavily soiled, pet-heavy, or extensive stain/odor jobs are always quoted upfront before any work begins.
+  </p>
+</section>
+
+
+<!-- ============================================================
+     WHAT'S INCLUDED
+============================================================ -->
+<section id="included" class="included-section">
+  <div class="included-header reveal">
+    <div class="section-eyebrow">What's Included</div>
+    <h2 class="section-heading">Every tier, <em>hand-done.</em></h2>
+    <p class="section-sub">No machine wash. No shortcuts. Every step performed by hand, every time.</p>
+  </div>
+
+  <div class="included-grid">
+    <!-- Express -->
+    <div class="inc-card reveal reveal-delay-1">
+      <div class="inc-card-label">Tier I</div>
+      <div class="inc-card-name">Express</div>
+      <ul>
+        <li>Hand wash &amp; dry</li>
+        <li>Wheel &amp; tire detail</li>
+        <li>Tire shine &amp; trim dressing</li>
+        <li>Streak-free windows</li>
+        <li>Spray sealant finish</li>
+      </ul>
+    </div>
+
+    <!-- Standard -->
+    <div class="inc-card reveal reveal-delay-2">
+      <div class="inc-card-label">Tier II</div>
+      <div class="inc-card-name">Standard</div>
+      <ul>
+        <li class="plus">Everything in Express, plus:</li>
+        <li>Full interior vacuum</li>
+        <li>Dashboard, console &amp; door panels</li>
+        <li>Interior windows &amp; surfaces</li>
+        <li>Light stain treatment</li>
+        <li>Trash removal</li>
+      </ul>
+    </div>
+
+    <!-- Premium -->
+    <div class="inc-card reveal reveal-delay-3">
+      <div class="inc-card-label">Tier III &mdash; Featured</div>
+      <div class="inc-card-name">Premium &#9733;</div>
+      <ul>
+        <li class="plus">Everything in Standard, plus:</li>
+        <li>Steam-clean carpets &amp; upholstery</li>
+        <li>Leather conditioning</li>
+        <li>Pet hair removal</li>
+        <li>Hand polish</li>
+        <li>Hand-applied wax or 3-month sealant</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     BOOK + PAY
+============================================================ -->
+<section id="book" class="book-section">
+  <div class="book-inner">
+    <div class="book-header reveal">
+      <div class="section-eyebrow">Booking</div>
+      <h2 class="section-heading">Two steps to <em>showroom clean.</em></h2>
+      <p class="section-sub">Pick your time slot, then lock it in with a quick payment. That's it.</p>
+    </div>
+
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <h4>Book your time</h4>
+          <p>Choose a date &amp; time that works for you via Calendly below.</p>
+        </div>
+      </div>
+      <div class="step-arrow" aria-hidden="true">&rarr;</div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <h4>Confirm with payment</h4>
+          <p>Secure your spot with a deposit or full payment via Square.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CALENDLY INLINE WIDGET ──────────────────────────────
+         Swap CALENDLY_URL in the CONFIG object at the top of this file.
+         The data-url attribute below is set dynamically in the script.
+    ────────────────────────────────────────────────────────── -->
+    <div class="calendly-wrap reveal">
+      <div
+        class="calendly-inline-widget"
+        id="calendly-widget"
+        style="min-width:320px;height:700px;">
+      </div>
+    </div>
+
+    <!-- ── SQUARE PAYMENT CARD ────────────────────────────────
+         Replace SQUARE_PAYMENT_LINK (and optionally SQUARE_DEPOSIT_LINK)
+         in the CONFIG object at the top of this file.
+    ────────────────────────────────────────────────────────── -->
+    <div class="pay-card reveal">
+      <div class="pay-card-text">
+        <h3>Step 2 &mdash; Confirm with payment</h3>
+        <p>Pay in full or leave a deposit to lock in your appointment. Powered by Square — secure, fast, and no account needed.</p>
+      </div>
+      <div class="pay-card-actions">
+        <!-- Full payment link -->
+        <a id="pay-full-btn" href="#" class="btn btn-gold" target="_blank" rel="noopener">
+          Pay in Full
+        </a>
+        <!-- Deposit link -->
+        <a id="pay-deposit-btn" href="#" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4);" target="_blank" rel="noopener">
+          Pay Deposit
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     FAQ
+============================================================ -->
+<section id="faq" class="faq-section">
+  <div class="faq-inner">
+    <div class="faq-header reveal">
+      <div class="section-eyebrow">Good to Know</div>
+      <h2 class="section-heading">Frequently <em>asked questions.</em></h2>
+    </div>
+
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span>Do your prices ever change for dirtier vehicles?</span>
+          <div class="faq-icon" aria-hidden="true">+</div>
+        </button>
+        <div class="faq-a" role="region">
+          <p>Our listed prices reflect standard-condition vehicles. Heavily soiled interiors, pet-heavy cars, or vehicles needing extensive stain or odor treatment may incur an additional fee — but we always quote it upfront and get your approval before any extra work begins. No surprises.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span>Is there a travel fee?</span>
+          <div class="faq-icon" aria-hidden="true">+</div>
+        </button>
+        <div class="faq-a" role="region">
+          <p>We serve Salt Lake, Utah, and Davis Counties with no trip fee. Travel beyond a 25-mile radius of our base may include a small, upfront-quoted trip fee. We'll confirm this with you during booking.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span>What do I need to provide on the day?</span>
+          <div class="faq-icon" aria-hidden="true">+</div>
+        </button>
+        <div class="faq-a" role="region">
+          <p>We bring all supplies and equipment. You just need to provide access to a water spigot and a standard electrical outlet at your home or office. A driveway or parking spot where we can work comfortably is all we need.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span>Are you insured? What if something goes wrong?</span>
+          <div class="faq-icon" aria-hidden="true">+</div>
+        </button>
+        <div class="faq-a" role="region">
+          <p>Yes — Blue Moose Detailing is fully insured. We stand behind every detail with a 5-star satisfaction guarantee. If you're not happy with the result, let us know and we'll make it right.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer class="footer navy-bg">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <svg class="footer-logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="60" cy="60" r="58" fill="#1b2c4f"/>
+        <circle cx="60" cy="60" r="52.5" fill="none" stroke="#aeb7cc" stroke-width="1.2" opacity=".55"/>
+        <g fill="none" stroke="#cdd4e2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <g id="fh">
+            <path d="M56,52 C50,44 47.5,40 45,31 C43.5,25 42.5,21 41,15"/>
+            <path d="M47,38 C43,37 40,35 37,31"/>
+            <path d="M45,32 C41,32 38,31 34.5,28.5"/>
+            <path d="M41,15 C40,12.5 38.5,11.5 36.5,10"/>
+            <path d="M41,15 C42,12.5 43,12 45,11.5"/>
+          </g>
+          <use href="#fh" transform="translate(120,0) scale(-1,1)"/>
+        </g>
+        <path d="M52,55 C46,53.5 41.5,56 41,61.5 C44.5,59.5 48.5,57.5 53,57 Z" fill="#cdd4e2"/>
+        <path d="M68,55 C74,53.5 78.5,56 79,61.5 C75.5,59.5 71.5,57.5 67,57 Z" fill="#cdd4e2"/>
+        <path d="M60,53 C53,53 48,57 47,64 C46,72 51,83 60,93 C69,83 74,72 73,64 C72,57 67,53 60,53 Z" fill="#cdd4e2"/>
+        <ellipse cx="54.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(20 54.5 65.5)"/>
+        <ellipse cx="65.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(-20 65.5 65.5)"/>
+        <ellipse cx="60" cy="85" rx="5.2" ry="4" fill="#1b2c4f"/>
+      </svg>
+      <div class="footer-brand-text">
+        <h3>Blue Moose Detailing</h3>
+        <p>Mobile &middot; Salt Lake, Utah &amp; Davis Counties</p>
+      </div>
+    </div>
+
+    <p class="footer-fineprint">
+      Prices reflect standard-condition vehicles. Heavily soiled, pet-heavy, or vehicles requiring extensive stain or odor treatment may incur additional fees, quoted upfront. Travel beyond a 25-mile radius may include a small trip fee. Water and power hookup access required at the service location.
+    </p>
+
+    <div class="footer-cta">
+      <div class="footer-cta-line">Book today &mdash; <em>we'll be there tomorrow.</em></div>
+      <button class="btn btn-gold" onclick="openCalendly()">Book Your Detail</button>
+    </div>
+  </div>
+  <div class="footer-copy">&copy; <span id="footer-year"></span> Blue Moose Detailing. All rights reserved.</div>
+</footer>
+
+<!-- Mobile floating book button -->
+<button class="btn btn-gold sticky-book" onclick="openCalendly()" aria-label="Book your detail">Book Now</button>
+
+
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
+
+<!-- Calendly widget script (current official snippet) -->
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+<script>
+  // ── Wire up CONFIG values ─────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    // Calendly inline widget
+    // The widget.js populates the div once it loads via Calendly.initInlineWidget
+    function tryInitCalendly () {
+      if (window.Calendly) {
+        Calendly.initInlineWidget({
+          url: CONFIG.CALENDLY_URL,
+          parentElement: document.getElementById('calendly-widget'),
+          prefill: {},
+          utm: {}
+        });
+      } else {
+        // widget.js hasn't loaded yet — retry shortly
+        setTimeout(tryInitCalendly, 300);
+      }
+    }
+    tryInitCalendly();
+
+    // Square payment buttons
+    document.getElementById('pay-full-btn').href    = CONFIG.SQUARE_PAYMENT_LINK;
+    document.getElementById('pay-deposit-btn').href = CONFIG.SQUARE_DEPOSIT_LINK;
+
+    // Footer year
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+  });
+
+  // Calendly popup (used by hero + footer CTA buttons and nav Book btn)
+  function openCalendly () {
+    if (window.Calendly) {
+      Calendly.initPopupWidget({ url: CONFIG.CALENDLY_URL });
+    } else {
+      // Fallback: scroll to inline widget
+      document.getElementById('book').scrollIntoView({ behavior: 'smooth' });
+    }
+    return false;
+  }
+
+  // Wire "Book Now" nav button to popup too
+  document.addEventListener('DOMContentLoaded', function () {
+    var navBtn = document.getElementById('nav-book-btn');
+    if (navBtn) {
+      navBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openCalendly();
+      });
+    }
+  });
+
+  // ── Hamburger menu ────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn  = document.getElementById('hamburger-btn');
+    var menu = document.getElementById('mobile-menu');
+    var links = menu.querySelectorAll('.mobile-link, .btn-gold');
+
+    btn.addEventListener('click', function () {
+      var open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    links.forEach(function (l) {
+      l.addEventListener('click', function () {
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  });
+
+  // ── Scroll reveal ─────────────────────────────────────────────
+  (function () {
+    var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('visible'); });
+      return;
+    }
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    items.forEach(function (el) { obs.observe(el); });
+  })();
+
+  // ── FAQ accordion ─────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.faq-q').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var item = btn.closest('.faq-item');
+        var isOpen = item.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(function (i) {
+          i.classList.remove('open');
+          i.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+        });
+        // Toggle clicked
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
