@@ -172,16 +172,13 @@
     .logo-circle {
       flex: 0 0 auto;
       border-radius: 50%;
-      background: rgba(255,255,255,.12);
-      display: flex; align-items: center; justify-content: center;
-      padding: 8%;
+      background-color: #fff;
+      background-image: url('logo.png');
+      background-size: 500%;
+      background-position: center 45%;
+      background-repeat: no-repeat;
     }
-    .logo-circle img {
-      width: 100%; height: 100%;
-      object-fit: contain;
-      display: block;
-      filter: brightness(0) invert(1);
-    }
+    .logo-circle img { display: none; }
     .nav-logo {
       width: 52px; height: 52px;
       box-shadow: 0 0 0 2px rgba(200,154,78,.6), 0 0 0 5px rgba(255,255,255,.12);
@@ -260,12 +257,7 @@
     }
     .hero-crest {
       width: 300px; height: 300px;
-      background: transparent !important;
       box-shadow: 0 0 0 3px var(--gold), 0 0 0 8px rgba(184,144,47,.25), 0 14px 32px rgba(0,0,0,.4);
-      padding: 12% !important;
-    }
-    .hero-crest img {
-      filter: brightness(0) invert(1) !important;
     }
     .hero-content { flex: 1; }
     .hero-eyebrow {
@@ -655,12 +647,7 @@
     .footer-brand { display: flex; align-items: center; gap: 16px; }
     .footer-logo {
       width: 90px; height: 90px;
-      background: transparent !important;
       box-shadow: 0 0 0 2px var(--gold), 0 0 0 6px rgba(184,144,47,.2);
-      padding: 10% !important;
-    }
-    .footer-logo img {
-      filter: brightness(0) invert(1) !important;
     }
     .footer-brand-text h3 {
       font-family: 'Playfair Display', serif;
