@@ -169,7 +169,7 @@
       align-items: center;
       gap: 12px;
     }
-    .nav-logo { width: 36px; height: 36px; flex: 0 0 auto; }
+    .nav-logo { width: 40px; height: 40px; flex: 0 0 auto; object-fit: contain; mix-blend-mode: multiply; }
     .nav-name {
       font-family: 'Playfair Display', serif;
       font-size: 17px;
@@ -244,8 +244,10 @@
     }
     .hero-crest {
       flex: 0 0 auto;
-      width: 120px;
-      filter: drop-shadow(0 12px 28px rgba(0,0,0,.4));
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+      mix-blend-mode: multiply;
     }
     .hero-content { flex: 1; }
     .hero-eyebrow {
@@ -633,7 +635,7 @@
       gap: 40px;
     }
     .footer-brand { display: flex; align-items: center; gap: 16px; }
-    .footer-logo { width: 56px; height: 56px; flex: 0 0 auto; }
+    .footer-logo { width: 60px; height: 60px; flex: 0 0 auto; object-fit: contain; mix-blend-mode: multiply; }
     .footer-brand-text h3 {
       font-family: 'Playfair Display', serif;
       font-size: 18px;
@@ -692,7 +694,7 @@
 
       .hero { padding: 52px 24px 52px; }
       .hero-inner { flex-direction: column; gap: 28px; }
-      .hero-crest { width: 90px; }
+      .hero-crest { width: 90px; height: 90px; }
 
       .trust-strip { grid-template-columns: 1fr; gap: 18px; }
 
@@ -761,26 +763,7 @@
 ============================================================ -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <a class="nav-brand" href="#hero" aria-label="Blue Moose Detailing home">
-    <svg class="nav-logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <circle cx="60" cy="60" r="58" fill="#1b2c4f"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="#aeb7cc" stroke-width="1.2" opacity=".55"/>
-      <g fill="none" stroke="#cdd4e2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <g id="nh">
-          <path d="M56,52 C50,44 47.5,40 45,31 C43.5,25 42.5,21 41,15"/>
-          <path d="M47,38 C43,37 40,35 37,31"/>
-          <path d="M45,32 C41,32 38,31 34.5,28.5"/>
-          <path d="M41,15 C40,12.5 38.5,11.5 36.5,10"/>
-          <path d="M41,15 C42,12.5 43,12 45,11.5"/>
-        </g>
-        <use href="#nh" transform="translate(120,0) scale(-1,1)"/>
-      </g>
-      <path d="M52,55 C46,53.5 41.5,56 41,61.5 C44.5,59.5 48.5,57.5 53,57 Z" fill="#cdd4e2"/>
-      <path d="M68,55 C74,53.5 78.5,56 79,61.5 C75.5,59.5 71.5,57.5 67,57 Z" fill="#cdd4e2"/>
-      <path d="M60,53 C53,53 48,57 47,64 C46,72 51,83 60,93 C69,83 74,72 73,64 C72,57 67,53 60,53 Z" fill="#cdd4e2"/>
-      <ellipse cx="54.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(20 54.5 65.5)"/>
-      <ellipse cx="65.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(-20 65.5 65.5)"/>
-      <ellipse cx="60" cy="85" rx="5.2" ry="4" fill="#1b2c4f"/>
-    </svg>
+    <img class="nav-logo" src="logo.jpg" alt="Blue Moose Detailing logo" />
     <span class="nav-name">Blue Moose Detailing</span>
   </a>
 
@@ -814,27 +797,7 @@
 ============================================================ -->
 <section id="hero" class="hero navy-bg">
   <div class="hero-inner">
-    <svg class="hero-crest reveal" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="Blue Moose Detailing crest">
-      <circle cx="60" cy="60" r="58" fill="#1b2c4f"/>
-      <circle cx="60" cy="60" r="58" fill="none" stroke="#0d1830" stroke-width="2"/>
-      <circle cx="60" cy="60" r="52.5" fill="none" stroke="#aeb7cc" stroke-width="1.2" opacity=".55"/>
-      <g fill="none" stroke="#cdd4e2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <g id="h2">
-          <path d="M56,52 C50,44 47.5,40 45,31 C43.5,25 42.5,21 41,15"/>
-          <path d="M47,38 C43,37 40,35 37,31"/>
-          <path d="M45,32 C41,32 38,31 34.5,28.5"/>
-          <path d="M41,15 C40,12.5 38.5,11.5 36.5,10"/>
-          <path d="M41,15 C42,12.5 43,12 45,11.5"/>
-        </g>
-        <use href="#h2" transform="translate(120,0) scale(-1,1)"/>
-      </g>
-      <path d="M52,55 C46,53.5 41.5,56 41,61.5 C44.5,59.5 48.5,57.5 53,57 Z" fill="#cdd4e2"/>
-      <path d="M68,55 C74,53.5 78.5,56 79,61.5 C75.5,59.5 71.5,57.5 67,57 Z" fill="#cdd4e2"/>
-      <path d="M60,53 C53,53 48,57 47,64 C46,72 51,83 60,93 C69,83 74,72 73,64 C72,57 67,53 60,53 Z" fill="#cdd4e2"/>
-      <ellipse cx="54.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(20 54.5 65.5)"/>
-      <ellipse cx="65.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(-20 65.5 65.5)"/>
-      <ellipse cx="60" cy="85" rx="5.2" ry="4" fill="#1b2c4f"/>
-    </svg>
+    <img class="hero-crest reveal" src="logo.jpg" alt="Blue Moose Detailing crest" />
 
     <div class="hero-content">
       <div class="hero-eyebrow reveal reveal-delay-1">Blue Moose Detailing &middot; Mobile &middot; Utah</div>
@@ -1122,26 +1085,7 @@
 <footer class="footer navy-bg">
   <div class="footer-inner">
     <div class="footer-brand">
-      <svg class="footer-logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="60" cy="60" r="58" fill="#1b2c4f"/>
-        <circle cx="60" cy="60" r="52.5" fill="none" stroke="#aeb7cc" stroke-width="1.2" opacity=".55"/>
-        <g fill="none" stroke="#cdd4e2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <g id="fh">
-            <path d="M56,52 C50,44 47.5,40 45,31 C43.5,25 42.5,21 41,15"/>
-            <path d="M47,38 C43,37 40,35 37,31"/>
-            <path d="M45,32 C41,32 38,31 34.5,28.5"/>
-            <path d="M41,15 C40,12.5 38.5,11.5 36.5,10"/>
-            <path d="M41,15 C42,12.5 43,12 45,11.5"/>
-          </g>
-          <use href="#fh" transform="translate(120,0) scale(-1,1)"/>
-        </g>
-        <path d="M52,55 C46,53.5 41.5,56 41,61.5 C44.5,59.5 48.5,57.5 53,57 Z" fill="#cdd4e2"/>
-        <path d="M68,55 C74,53.5 78.5,56 79,61.5 C75.5,59.5 71.5,57.5 67,57 Z" fill="#cdd4e2"/>
-        <path d="M60,53 C53,53 48,57 47,64 C46,72 51,83 60,93 C69,83 74,72 73,64 C72,57 67,53 60,53 Z" fill="#cdd4e2"/>
-        <ellipse cx="54.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(20 54.5 65.5)"/>
-        <ellipse cx="65.5" cy="65.5" rx="2.1" ry="3.1" fill="#1b2c4f" transform="rotate(-20 65.5 65.5)"/>
-        <ellipse cx="60" cy="85" rx="5.2" ry="4" fill="#1b2c4f"/>
-      </svg>
+      <img class="footer-logo" src="logo.jpg" alt="Blue Moose Detailing logo" />
       <div class="footer-brand-text">
         <h3>Blue Moose Detailing</h3>
         <p>Mobile &middot; Salt Lake, Utah &amp; Davis Counties</p>
