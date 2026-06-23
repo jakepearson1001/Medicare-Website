@@ -8,7 +8,7 @@
        SEO & Open Graph
   ==================================================== -->
   <title>Blue Moose Detailing — Mobile Auto Detailing in Utah</title>
-  <meta name="description" content="Premium mobile auto detailing in Salt Lake, Utah & Davis Counties. We come to you — showroom shine at your driveway. Book Express, Standard, or Premium detail today." />
+  <meta name="description" content="Premium mobile auto detailing in Salt Lake, Utah & Davis Counties. We come to you — showroom shine at your driveway. Book an Exterior or Full Detail today." />
   <meta property="og:title" content="Blue Moose Detailing — Mobile Auto Detailing in Utah" />
   <meta property="og:description" content="Showroom shine, at your driveway. Hand detailing brought to your home or office." />
   <meta property="og:type" content="website" />
@@ -316,10 +316,10 @@
       border: 1px solid rgba(29,43,74,.1);
     }
 
-    /* column grid: vehicle name + 3 price cols */
+    /* column grid: vehicle name + 2 price cols */
     .pt-row {
       display: grid;
-      grid-template-columns: 1fr 140px 140px 160px;
+      grid-template-columns: 1fr 160px 180px;
       align-items: stretch;
     }
     .pt-head { background: var(--ink); }
@@ -681,7 +681,8 @@
        RESPONSIVE
     ===================================================== */
     @media (max-width: 900px) {
-      .included-grid { grid-template-columns: 1fr 1fr; }
+      /* 2-col included grid already fits; override inline max-width */
+      .included-grid { max-width: 100% !important; }
     }
 
     @media (max-width: 700px) {
@@ -697,7 +698,7 @@
 
       .pricing-section, .included-section, .book-section, .faq-section { padding: 60px 24px; }
 
-      .pt-row { grid-template-columns: 1fr 100px 100px 110px; }
+      .pt-row { grid-template-columns: 1fr 110px 130px; }
       .pt-cell { padding: 16px 10px; }
       .price-val { font-size: 26px; }
       .veh-icon { width: 36px; height: 24px; }
@@ -719,7 +720,7 @@
     }
 
     @media (max-width: 500px) {
-      .pt-row { grid-template-columns: 1fr 88px 88px 96px; }
+      .pt-row { grid-template-columns: 1fr 96px 110px; }
       .price-val { font-size: 22px; }
     }
 
@@ -885,13 +886,10 @@
     <div class="pt-row pt-head">
       <div class="pt-cell left" style="color:var(--silver);font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;">Vehicle</div>
       <div class="pt-cell">
-        <div class="col-hd">Express<span class="sub">Exterior only</span></div>
-      </div>
-      <div class="pt-cell">
-        <div class="col-hd">Standard<span class="sub">Interior + Exterior</span></div>
+        <div class="col-hd">Exterior<span class="sub">Exterior only</span></div>
       </div>
       <div class="pt-cell premium-col">
-        <div class="col-hd premium">Premium &#9733;<span class="sub">Full deep clean</span></div>
+        <div class="col-hd premium">Full Detail &#9733;<span class="sub">Exterior + Interior</span></div>
       </div>
     </div>
 
@@ -908,9 +906,8 @@
           <div class="veh-tags">Coupe &middot; Compact &middot; Hatchback</div>
         </div>
       </div>
-      <div class="pt-cell"><div class="price-val"><sup>$</sup>99</div></div>
-      <div class="pt-cell"><div class="price-val"><sup>$</sup>189</div></div>
-      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>275</div></div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>80</div></div>
+      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>130</div></div>
     </div>
 
     <!-- SUV -->
@@ -927,9 +924,8 @@
           <div class="veh-tags">Crossover &middot; 2-Row &middot; Mid-size</div>
         </div>
       </div>
-      <div class="pt-cell"><div class="price-val"><sup>$</sup>119</div></div>
-      <div class="pt-cell"><div class="price-val"><sup>$</sup>219</div></div>
-      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>325</div></div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>100</div></div>
+      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>150</div></div>
     </div>
 
     <!-- Truck & Large SUV -->
@@ -946,14 +942,13 @@
           <div class="veh-tags">Pickup &middot; 3-Row &middot; Suburban &middot; Tahoe</div>
         </div>
       </div>
-      <div class="pt-cell"><div class="price-val"><sup>$</sup>149</div></div>
-      <div class="pt-cell"><div class="price-val"><sup>$</sup>259</div></div>
-      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>389</div></div>
+      <div class="pt-cell"><div class="price-val"><sup>$</sup>120</div></div>
+      <div class="pt-cell premium-col"><div class="price-val premium-price"><sup>$</sup>170</div></div>
     </div>
   </div>
 
   <p class="pricing-note reveal">
-    <strong>Note:</strong> Prices reflect standard-condition vehicles. Add-ons for heavily soiled, pet-heavy, or extensive stain/odor jobs are always quoted upfront before any work begins.
+    <strong>Full interior treatment adds $50</strong> to any exterior detail &mdash; vacuum, trash removal, interior surfaces, light stain treatment, pet hair removal, leather conditioning &amp; wax. Prices reflect standard-condition vehicles; add-ons for heavily soiled or pet-heavy jobs are always quoted upfront.
   </p>
 </section>
 
@@ -968,11 +963,11 @@
     <p class="section-sub">No machine wash. No shortcuts. Every step performed by hand, every time.</p>
   </div>
 
-  <div class="included-grid">
-    <!-- Express -->
+  <div class="included-grid" style="grid-template-columns:repeat(2,1fr);max-width:760px;">
+    <!-- Exterior -->
     <div class="inc-card reveal reveal-delay-1">
-      <div class="inc-card-label">Tier I</div>
-      <div class="inc-card-name">Express</div>
+      <div class="inc-card-label">Exterior</div>
+      <div class="inc-card-name">Exterior Only</div>
       <ul>
         <li>Hand wash &amp; dry</li>
         <li>Wheel &amp; tire detail</li>
@@ -982,31 +977,19 @@
       </ul>
     </div>
 
-    <!-- Standard -->
+    <!-- Full Detail -->
     <div class="inc-card reveal reveal-delay-2">
-      <div class="inc-card-label">Tier II</div>
-      <div class="inc-card-name">Standard</div>
+      <div class="inc-card-label">Full Detail &mdash; Featured &#9733;</div>
+      <div class="inc-card-name">Full Detail &#9733;</div>
       <ul>
-        <li class="plus">Everything in Express, plus:</li>
+        <li class="plus">Everything in Exterior, plus:</li>
         <li>Full interior vacuum</li>
-        <li>Dashboard, console &amp; door panels</li>
-        <li>Interior windows &amp; surfaces</li>
-        <li>Light stain treatment</li>
         <li>Trash removal</li>
-      </ul>
-    </div>
-
-    <!-- Premium -->
-    <div class="inc-card reveal reveal-delay-3">
-      <div class="inc-card-label">Tier III &mdash; Featured</div>
-      <div class="inc-card-name">Premium &#9733;</div>
-      <ul>
-        <li class="plus">Everything in Standard, plus:</li>
-        <li>Steam-clean carpets &amp; upholstery</li>
-        <li>Leather conditioning</li>
+        <li>Interior surfaces &amp; panels</li>
+        <li>Light stain treatment</li>
         <li>Pet hair removal</li>
-        <li>Hand polish</li>
-        <li>Hand-applied wax or 3-month sealant</li>
+        <li>Leather conditioning</li>
+        <li>Hand-applied wax</li>
       </ul>
     </div>
   </div>
