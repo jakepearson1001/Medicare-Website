@@ -172,13 +172,19 @@
     .logo-circle {
       flex: 0 0 auto;
       border-radius: 50%;
-      background-color: #fff;
-      background-image: url('logo-new.jpg');
-      background-repeat: no-repeat;
-      background-size: 700%;
-      background-position: 50% 48%;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
     }
-    .logo-circle img { display: none; }
+    .logo-circle img {
+      display: block;
+      position: absolute;
+      width: 700%;
+      height: auto;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -48%);
+    }
     .nav-logo {
       width: 52px; height: 52px;
     }
