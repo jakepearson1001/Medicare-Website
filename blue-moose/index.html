@@ -169,7 +169,14 @@
       align-items: center;
       gap: 12px;
     }
-    .nav-logo { width: 40px; height: 40px; flex: 0 0 auto; object-fit: contain; mix-blend-mode: multiply; }
+    .nav-logo {
+      width: 44px; height: 44px; flex: 0 0 auto;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fff;
+      padding: 5px;
+      box-shadow: 0 0 0 2px rgba(200,154,78,.5), 0 0 0 4px rgba(255,255,255,.12);
+    }
     .nav-name {
       font-family: 'Playfair Display', serif;
       font-size: 17px;
@@ -247,7 +254,10 @@
       width: 140px;
       height: 140px;
       object-fit: contain;
-      mix-blend-mode: multiply;
+      border-radius: 50%;
+      background: #fff;
+      padding: 10px;
+      box-shadow: 0 0 0 3px var(--gold), 0 0 0 7px rgba(184,144,47,.25), 0 14px 32px rgba(0,0,0,.4);
     }
     .hero-content { flex: 1; }
     .hero-eyebrow {
@@ -635,7 +645,14 @@
       gap: 40px;
     }
     .footer-brand { display: flex; align-items: center; gap: 16px; }
-    .footer-logo { width: 60px; height: 60px; flex: 0 0 auto; object-fit: contain; mix-blend-mode: multiply; }
+    .footer-logo {
+      width: 64px; height: 64px; flex: 0 0 auto;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fff;
+      padding: 7px;
+      box-shadow: 0 0 0 2px var(--gold), 0 0 0 5px rgba(184,144,47,.2);
+    }
     .footer-brand-text h3 {
       font-family: 'Playfair Display', serif;
       font-size: 18px;
@@ -746,9 +763,6 @@
 
     // Your Square payment link (create at squareup.com/online-checkout)
     SQUARE_PAYMENT_LINK: "https://square.link/u/REPLACE_WITH_SQUARE_LINK",
-
-    // Optional: Square deposit link (e.g. $25 hold)
-    SQUARE_DEPOSIT_LINK: "https://square.link/u/REPLACE_WITH_DEPOSIT_LINK",
 
     // Contact info
     PHONE: "(801) 555-0100",
@@ -1007,16 +1021,12 @@
     <div class="pay-card reveal">
       <div class="pay-card-text">
         <h3>Step 2 &mdash; Confirm with payment</h3>
-        <p>Pay in full or leave a deposit to lock in your appointment. Powered by Square — secure, fast, and no account needed.</p>
+        <p>Lock in your appointment with full payment via Square — secure, fast, and no account needed.</p>
       </div>
       <div class="pay-card-actions">
-        <!-- Full payment link -->
+        <!-- NOTE: swap SQUARE_PAYMENT_LINK in the CONFIG object at the top of this file -->
         <a id="pay-full-btn" href="#" class="btn btn-gold" target="_blank" rel="noopener">
-          Pay in Full
-        </a>
-        <!-- Deposit link -->
-        <a id="pay-deposit-btn" href="#" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4);" target="_blank" rel="noopener">
-          Pay Deposit
+          Pay Now
         </a>
       </div>
     </div>
@@ -1136,8 +1146,7 @@
     tryInitCalendly();
 
     // Square payment buttons
-    document.getElementById('pay-full-btn').href    = CONFIG.SQUARE_PAYMENT_LINK;
-    document.getElementById('pay-deposit-btn').href = CONFIG.SQUARE_DEPOSIT_LINK;
+    document.getElementById('pay-full-btn').href = CONFIG.SQUARE_PAYMENT_LINK;
 
     // Footer year
     document.getElementById('footer-year').textContent = new Date().getFullYear();
