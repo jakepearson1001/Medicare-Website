@@ -169,13 +169,22 @@
       align-items: center;
       gap: 12px;
     }
-    .nav-logo {
-      width: 52px; height: 52px; flex: 0 0 auto;
-      object-fit: cover;
+    .logo-circle {
+      flex: 0 0 auto;
       border-radius: 50%;
+      overflow: hidden;
       background: #fff;
-      padding: 0;
-      box-shadow: 0 0 0 2px rgba(200,154,78,.5), 0 0 0 4px rgba(255,255,255,.12);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-circle img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform: scale(2.4);
+      display: block;
+    }
+    .nav-logo {
+      width: 52px; height: 52px;
+      box-shadow: 0 0 0 2px rgba(200,154,78,.6), 0 0 0 5px rgba(255,255,255,.12);
     }
     .nav-name {
       font-family: 'Playfair Display', serif;
@@ -250,14 +259,7 @@
       align-items: flex-start;
     }
     .hero-crest {
-      flex: 0 0 auto;
-      width: 340px;
-      height: 340px;
-      object-fit: cover;
-      object-position: center 20%;
-      border-radius: 50%;
-      background: #fff;
-      padding: 0;
+      width: 300px; height: 300px;
       box-shadow: 0 0 0 3px var(--gold), 0 0 0 8px rgba(184,144,47,.25), 0 14px 32px rgba(0,0,0,.4);
     }
     .hero-content { flex: 1; }
@@ -647,12 +649,7 @@
     }
     .footer-brand { display: flex; align-items: center; gap: 16px; }
     .footer-logo {
-      width: 120px; height: 120px; flex: 0 0 auto;
-      object-fit: cover;
-      object-position: center 20%;
-      border-radius: 50%;
-      background: #fff;
-      padding: 0;
+      width: 100px; height: 100px;
       box-shadow: 0 0 0 2px var(--gold), 0 0 0 6px rgba(184,144,47,.2);
     }
     .footer-brand-text h3 {
@@ -713,7 +710,7 @@
 
       .hero { padding: 52px 24px 52px; }
       .hero-inner { flex-direction: column; gap: 28px; }
-      .hero-crest { width: 220px; height: 220px; }
+      .hero-crest { width: 200px; height: 200px; }
 
       .trust-strip { grid-template-columns: 1fr; gap: 18px; }
 
@@ -779,7 +776,7 @@
 ============================================================ -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <a class="nav-brand" href="#hero" aria-label="Blue Moose Detailing home">
-    <img class="nav-logo" src="logo.jpg" alt="Blue Moose Detailing logo" />
+    <div class="logo-circle nav-logo"><img src="logo.jpg" alt="Blue Moose Detailing logo" /></div>
     <span class="nav-name">Blue Moose Detailing</span>
   </a>
 
@@ -813,7 +810,7 @@
 ============================================================ -->
 <section id="hero" class="hero navy-bg">
   <div class="hero-inner">
-    <img class="hero-crest reveal" src="logo.jpg" alt="Blue Moose Detailing crest" />
+    <div class="logo-circle hero-crest reveal"><img src="logo.jpg" alt="Blue Moose Detailing crest" /></div>
 
     <div class="hero-content">
       <div class="hero-eyebrow reveal reveal-delay-1">Blue Moose Detailing &middot; Mobile &middot; Utah</div>
@@ -1102,7 +1099,7 @@
 <footer class="footer navy-bg">
   <div class="footer-inner">
     <div class="footer-brand">
-      <img class="footer-logo" src="logo.jpg" alt="Blue Moose Detailing logo" />
+      <div class="logo-circle footer-logo"><img src="logo.jpg" alt="Blue Moose Detailing logo" /></div>
       <div class="footer-brand-text">
         <h3>Blue Moose Detailing</h3>
         <p>Mobile &middot; Salt Lake, Utah &amp; Davis Counties</p>
