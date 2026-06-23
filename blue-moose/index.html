@@ -1007,12 +1007,17 @@
          The data-url attribute below is set dynamically in the script.
     ────────────────────────────────────────────────────────── -->
     <div class="calendly-wrap reveal">
+      <!-- Calendly inline widget — data-url is set by the script below before widget.js loads -->
       <div
         class="calendly-inline-widget"
         id="calendly-widget"
         style="min-width:320px;height:700px;">
       </div>
     </div>
+    <script>
+      // Set data-url before widget.js initialises so Calendly picks it up automatically
+      document.getElementById('calendly-widget').setAttribute('data-url', CONFIG.CALENDLY_URL);
+    </script>
 
     <!-- ── SQUARE PAYMENT CARD ────────────────────────────────
          Replace SQUARE_PAYMENT_LINK (and optionally SQUARE_DEPOSIT_LINK)
@@ -1128,23 +1133,6 @@
 <script>
   // ── Wire up CONFIG values ─────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {
-    // Calendly inline widget
-    // The widget.js populates the div once it loads via Calendly.initInlineWidget
-    function tryInitCalendly () {
-      if (window.Calendly) {
-        Calendly.initInlineWidget({
-          url: CONFIG.CALENDLY_URL,
-          parentElement: document.getElementById('calendly-widget'),
-          prefill: {},
-          utm: {}
-        });
-      } else {
-        // widget.js hasn't loaded yet — retry shortly
-        setTimeout(tryInitCalendly, 300);
-      }
-    }
-    tryInitCalendly();
-
     // Square payment buttons
     document.getElementById('pay-full-btn').href = CONFIG.SQUARE_PAYMENT_LINK;
 
