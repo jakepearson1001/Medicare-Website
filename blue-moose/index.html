@@ -172,12 +172,16 @@
     .logo-circle {
       flex: 0 0 auto;
       border-radius: 50%;
-      background-image: url('logo.jpg');
-      background-size: 260%;
-      background-position: center 38%;
-      background-color: #fff;
+      background: rgba(255,255,255,.12);
+      display: flex; align-items: center; justify-content: center;
+      padding: 8%;
     }
-    .logo-circle img { display: none; }
+    .logo-circle img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: brightness(0) invert(1);
+    }
     .nav-logo {
       width: 52px; height: 52px;
       box-shadow: 0 0 0 2px rgba(200,154,78,.6), 0 0 0 5px rgba(255,255,255,.12);
@@ -256,7 +260,12 @@
     }
     .hero-crest {
       width: 300px; height: 300px;
+      background: transparent !important;
       box-shadow: 0 0 0 3px var(--gold), 0 0 0 8px rgba(184,144,47,.25), 0 14px 32px rgba(0,0,0,.4);
+      padding: 12% !important;
+    }
+    .hero-crest img {
+      filter: brightness(0) invert(1) !important;
     }
     .hero-content { flex: 1; }
     .hero-eyebrow {
@@ -645,8 +654,13 @@
     }
     .footer-brand { display: flex; align-items: center; gap: 16px; }
     .footer-logo {
-      width: 100px; height: 100px;
+      width: 90px; height: 90px;
+      background: transparent !important;
       box-shadow: 0 0 0 2px var(--gold), 0 0 0 6px rgba(184,144,47,.2);
+      padding: 10% !important;
+    }
+    .footer-logo img {
+      filter: brightness(0) invert(1) !important;
     }
     .footer-brand-text h3 {
       font-family: 'Playfair Display', serif;
@@ -772,7 +786,7 @@
 ============================================================ -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <a class="nav-brand" href="#hero" aria-label="Blue Moose Detailing home">
-    <div class="logo-circle nav-logo"><img src="logo.jpg" alt="Blue Moose Detailing logo" /></div>
+    <div class="logo-circle nav-logo"><img src="logo.png" alt="Blue Moose Detailing logo" /></div>
     <span class="nav-name">Blue Moose Detailing</span>
   </a>
 
@@ -806,7 +820,7 @@
 ============================================================ -->
 <section id="hero" class="hero navy-bg">
   <div class="hero-inner">
-    <div class="logo-circle hero-crest reveal"><img src="logo.jpg" alt="Blue Moose Detailing crest" /></div>
+    <div class="logo-circle hero-crest reveal"><img src="logo.png" alt="Blue Moose Detailing crest" /></div>
 
     <div class="hero-content">
       <div class="hero-eyebrow reveal reveal-delay-1">Blue Moose Detailing &middot; Mobile &middot; Utah</div>
@@ -1095,7 +1109,7 @@
 <footer class="footer navy-bg">
   <div class="footer-inner">
     <div class="footer-brand">
-      <div class="logo-circle footer-logo"><img src="logo.jpg" alt="Blue Moose Detailing logo" /></div>
+      <div class="logo-circle footer-logo"><img src="logo.png" alt="Blue Moose Detailing logo" /></div>
       <div class="footer-brand-text">
         <h3>Blue Moose Detailing</h3>
         <p>Mobile &middot; Salt Lake, Utah &amp; Davis Counties</p>
