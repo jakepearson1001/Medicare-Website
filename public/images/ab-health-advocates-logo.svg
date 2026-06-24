@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" width="520" height="160" role="img" aria-label="A&B Health Advocates — Helping with your healthcare needs">
+  <rect width="520" height="160" fill="white"/>
+
+  <!-- Red circle -->
+  <circle cx="72" cy="80" r="62" fill="#e02020"/>
+
+  <!-- A&B text in circle -->
+  <text x="72" y="72" text-anchor="middle" font-family="Georgia, serif" font-weight="bold" font-size="28" fill="white">A<tspan font-size="22" dy="2">&amp;</tspan><tspan font-size="28" dy="-2">B</tspan></text>
+  <text x="72" y="104" text-anchor="middle" font-family="Georgia, serif" font-weight="bold" font-size="13" fill="white" letter-spacing="1">HEALTH</text>
+
+  <!-- Health (blue bold) -->
+  <text x="152" y="82" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="48" fill="#2a7fc1">Health</text>
+
+  <!-- Advocates (red italic) -->
+  <text x="310" y="82" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="48" fill="#e02020">Advocates</text>
+
+  <!-- Tagline -->
+  <text x="152" y="115" font-family="Arial, Helvetica, sans-serif" font-style="italic" font-size="19" fill="#999999">Helping with your healthcare needs</text>
+</svg>
