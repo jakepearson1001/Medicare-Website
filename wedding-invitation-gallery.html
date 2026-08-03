@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Invitation Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  /* ---------------------------------------------------------------- */
+  /* Site chrome — quiet, gallery-like. The invites carry the color.  */
+  /* ---------------------------------------------------------------- */
+  :root{
+    --bg:#faf9f6;
+    --ink:#1c1c1a;
+    --muted:#6b6b63;
+    --line:#e3e0d6;
+  }
+  *{ box-sizing:border-box; }
+  [hidden]{ display:none !important; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+
+  .site-header{ text-align:center; padding:56px 24px 28px; }
+  .site-header h1{
+    font-family:'Playfair Display',Georgia,'Times New Roman',serif;
+    font-weight:600; font-size:clamp(28px,4vw,44px); margin:0 0 10px;
+  }
+  .site-header .subtitle{ margin:0; color:var(--muted); font-size:15px; }
+
+  .controls{ max-width:1100px; margin:0 auto; padding:0 24px 8px; }
+
+  .filter-bar{
+    display:flex; flex-wrap:wrap; gap:20px 32px; align-items:flex-end;
+    padding:20px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .filter-group{ display:flex; flex-direction:column; gap:8px; }
+  .filter-label{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; max-width:520px; }
+  .chip{
+    border:1px solid var(--line); background:#fff; color:var(--ink);
+    padding:6px 14px; border-radius:999px; font-size:13px; cursor:pointer;
+    transition:all .15s ease; font-family:inherit;
+  }
+  .chip:hover{ border-color:#bdb9ac; }
+  .chip.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  .filter-status{ margin-left:auto; display:flex; align-items:center; gap:14px; font-size:13px; color:var(--muted); }
+  #clearFilters{ border:none; background:none; color:var(--ink); text-decoration:underline; cursor:pointer; font-size:13px; padding:0; font-family:inherit; }
+  #clearFilters:disabled{ color:var(--line); text-decoration:none; cursor:default; }
+
+  .customize-panel{ margin-top:14px; border-bottom:1px solid var(--line); }
+  .customize-panel summary{
+    cursor:pointer; font-size:13px; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--muted); padding:12px 0; list-style:none;
+  }
+  .customize-panel summary::-webkit-details-marker{ display:none; }
+  .customize-panel summary::before{ content:'+ '; }
+  .customize-panel[open] summary::before{ content:'– '; }
+  .customize-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:14px; padding:4px 0 24px;
+  }
+  .customize-grid label{ display:flex; flex-direction:column; gap:6px; font-size:12px; color:var(--muted); }
+  .customize-grid input{
+    font-family:inherit; font-size:14px; padding:8px 10px; border:1px solid var(--line);
+    border-radius:6px; background:#fff; color:var(--ink);
+  }
+  .customize-grid input:focus{ outline:2px solid var(--ink); outline-offset:1px; }
+
+  main{ max-width:1100px; margin:0 auto; padding:32px 24px 100px; }
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:40px 28px;
+  }
+  .card{ cursor:pointer; }
+  .card-preview{
+    aspect-ratio:5/7; border-radius:4px; overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.08),0 8px 20px -8px rgba(0,0,0,.15);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover .card-preview{ transform:translateY(-3px); box-shadow:0 4px 10px rgba(0,0,0,.1),0 18px 32px -10px rgba(0,0,0,.22); }
+  .card-meta{ padding-top:12px; }
+  .card-meta h3{ margin:0 0 4px; font-family:'Playfair Display',Georgia,serif; font-size:16px; font-weight:600; }
+  .tags{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tag{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border:1px solid var(--line); padding:2px 8px; border-radius:999px; }
+
+  .empty-state{ text-align:center; padding:100px 20px; color:var(--muted); }
+  .empty-state button{ margin-top:14px; border:1px solid var(--line); background:#fff; padding:8px 18px; border-radius:999px; cursor:pointer; font-size:13px; font-family:inherit; }
+
+  /* Invite frame mechanics shared by every template. Inlined again on each
+     rendered .inv-frame element so a copied snippet stays self-contained. */
+  .inv-frame{ width:100%; aspect-ratio:5/7; container-type:inline-size; position:relative; overflow:hidden; }
+  .inv-inner{ position:absolute; inset:0; }
+
+  /* Modal */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(20,20,18,.55); display:flex; align-items:center; justify-content:center; padding:24px; z-index:100; }
+  .modal{ background:#fff; border-radius:10px; max-width:820px; width:100%; max-height:90vh; overflow:auto; position:relative; padding:32px; }
+  .modal-close{ position:absolute; top:12px; right:14px; border:none; background:none; font-size:28px; line-height:1; cursor:pointer; color:var(--muted); }
+  .modal-body{ display:flex; gap:32px; flex-wrap:wrap; }
+  .modal-preview-wrap{ flex:0 0 260px; }
+  .modal-preview{ width:260px; }
+  .modal-info{ flex:1 1 240px; min-width:220px; padding-top:4px; }
+  .modal-info h2{ font-family:'Playfair Display',Georgia,serif; margin:0 0 8px; font-size:22px; }
+  .modal-info .tags{ margin-bottom:22px; }
+  .modal-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .modal-actions button{ border:1px solid var(--ink); background:var(--ink); color:#fff; padding:10px 18px; border-radius:6px; font-size:13px; cursor:pointer; font-family:inherit; }
+  .modal-actions button#printBtn{ background:#fff; color:var(--ink); }
+  .copy-feedback{ font-size:12px; color:#3a7a4a; min-height:16px; margin:10px 0 0; }
+
+  .print-root{ display:none; }
+
+  @media print{
+    #app{ display:none; }
+    .print-root{ display:block; }
+    .print-root .inv-frame{ width:5in !important; height:7in !important; }
+    @page{ size:5in 7in; margin:0; }
+  }
+
+  @media (max-width:640px){
+    .modal-body{ flex-direction:column; }
+    .modal-preview-wrap, .modal-preview{ width:100%; flex-basis:auto; }
+    .filter-status{ margin-left:0; width:100%; justify-content:space-between; }
+  }
+
+  /* Per-template CSS is generated from TEMPLATES and injected here at load. */
+  #templateStyles{}
+</style>
+<style id="templateStyles"></style>
+</head>
+<body>
+  <div id="app">
+    <header class="site-header">
+      <h1>Invitation Gallery</h1>
+      <p class="subtitle">Eight ways to say “we’re getting married.” Filter, customize, and print.</p>
+    </header>
+
+    <section class="controls">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">Style</span>
+          <div class="chip-row" id="styleChips"></div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Theme</span>
+          <div class="chip-row" id="themeChips"></div>
+        </div>
+        <div class="filter-status">
+          <span id="filterCount">0 filters active</span>
+          <button id="clearFilters" type="button" disabled>Clear All</button>
+        </div>
+      </div>
+
+      <details class="customize-panel" id="customizePanel">
+        <summary>Customize</summary>
+        <div class="customize-grid">
+          <label>Partner 1 <input type="text" id="in-name1"></label>
+          <label>Partner 2 <input type="text" id="in-name2"></label>
+          <label>Date <input type="date" id="in-date"></label>
+          <label>Time <input type="time" id="in-time"></label>
+          <label>Venue name <input type="text" id="in-venueName"></label>
+          <label>Venue city/state <input type="text" id="in-venueCity"></label>
+          <label>RSVP line <input type="text" id="in-rsvp"></label>
+        </div>
+      </details>
+    </section>
+
+    <main>
+      <div class="grid" id="grid"></div>
+      <div class="empty-state" id="emptyState" hidden>
+        <p>No invitations match your filters.</p>
+        <button id="emptyClear" type="button">Clear filters</button>
+      </div>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalName">
+        <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+        <div class="modal-body">
+          <div class="modal-preview-wrap"><div class="modal-preview" id="modalPreview"></div></div>
+          <div class="modal-info">
+            <h2 id="modalName"></h2>
+            <div class="tags" id="modalTags"></div>
+            <div class="modal-actions">
+              <button id="copyHtmlBtn" type="button">Copy HTML</button>
+              <button id="printBtn" type="button">Print</button>
+            </div>
+            <p class="copy-feedback" id="copyFeedback" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="printRoot" class="print-root"></div>
+
+  <script>
+  'use strict';
+
+  // ---------------------------------------------------------------- //
+  // Shared helpers used by every template's render()                  //
+  // ---------------------------------------------------------------- //
+  function esc(str){
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function dateParts(iso){
+    var parts = (iso || '').split('-').map(Number);
+    var y = parts[0], m = parts[1], d = parts[2];
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var dt = new Date(y, (m || 1) - 1, d || 1);
+    return {
+      day:d, monthName:months[(m || 1) - 1], year:y,
+      weekday:dt.toLocaleDateString('en-US', { weekday:'long' }),
+      long:months[(m || 1) - 1] + ' ' + d + ', ' + y,
+      dotted:String(d).padStart(2,'0') + '.' + String(m).padStart(2,'0') + '.' + y
+    };
+  }
+
+  function formatTime(t){
+    if(!t) return '';
+    var bits = t.split(':').map(Number);
+    var h = bits[0], min = bits[1];
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; if(h === 0) h = 12;
+    return h + ':' + String(min).padStart(2,'0') + ' ' + ampm;
+  }
+
+  // Wraps a template's markup in the shared 5x7 frame. Inline styles carry
+  // the sizing/container mechanics so a copied snippet works on its own.
+  function frame(t, innerHtml){
+    var vars = t.palette.map(function(c,i){ return '--p' + (i+1) + ':' + c; }).join(';');
+    return '<div class="inv-frame inv-' + t.id + '" style="' + vars +
+      ';width:100%;aspect-ratio:5/7;container-type:inline-size;position:relative;overflow:hidden;">' +
+      '<div class="inv-inner" style="position:absolute;inset:0;">' + innerHtml + '</div></div>';
+  }
+
+  // ============================================================== //
+  // TEMPLATES                                                        //
+  // Each entry: { id, name, style, theme, palette:[hex,...], css,     //
+  //               render(data) }                                     //
+  //                                                                    //
+  // render(data) must return a self-contained HTML string built with  //
+  // frame(this, innerHtml). To add a new invite: copy an existing      //
+  // object, give it a unique id, and append it below — nothing else    //
+  // needs to change for it to show up in the gallery and filters.      //
+  // ============================================================== //
+  const TEMPLATES = [
+
+    // 1. Modern / Garden — asymmetric rail + big left-aligned type
+    {
+      id:'modern-garden', name:'Evergreen Editorial', style:'Modern', theme:'Garden',
+      palette:['#2f3e2e','#f4f1ea','#8a9b7c'],
+      css:
+        '.inv-modern-garden .inv-inner{display:flex;background:var(--p2);font-family:\'Jost\',system-ui,sans-serif;color:var(--p1);}' +
+        '.inv-modern-garden .im-rail{width:22cqi;background:var(--p1);display:flex;align-items:center;justify-content:center;}' +
+        '.inv-modern-garden .im-rail-text{writing-mode:vertical-rl;transform:rotate(180deg);color:var(--p2);letter-spacing:.25em;font-size:3.2cqi;text-transform:uppercase;}' +
+        '.inv-modern-garden .im-main{flex:1;padding:8cqi 7cqi;display:flex;flex-direction:column;justify-content:center;}' +
+        '.inv-modern-garden .im-eyebrow{margin:0 0 2cqi;text-transform:uppercase;letter-spacing:.2em;font-size:2.6cqi;color:var(--p3);}' +
+        '.inv-modern-garden .im-names{margin:0 0 4cqi;font-size:9cqi;font-weight:500;line-height:1.05;}' +
+        '.inv-modern-garden .im-amp{display:block;font-style:italic;color:var(--p3);font-size:.6em;margin:1cqi 0;}' +
+        '.inv-modern-garden .im-rule{width:5cqi;height:2px;background:var(--p1);margin:2cqi 0 4cqi;}' +
+        '.inv-modern-garden .im-details p{margin:0 0 1.2cqi;font-size:3.1cqi;letter-spacing:.03em;}' +
+        '.inv-modern-garden .im-rsvp{margin-top:4cqi;font-size:2.4cqi;color:var(--p3);font-style:italic;}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<div class="im-rail"><span class="im-rail-text">The Wedding Of</span></div>' +
+          '<div class="im-main">' +
+            '<p class="im-eyebrow">Save the Date</p>' +
+            '<h2 class="im-names">' + esc(data.name1) + '<span class="im-amp">&amp;</span>' + esc(data.name2) + '</h2>' +
+            '<div class="im-rule"></div>' +
+            '<div class="im-details">' +
+              '<p>' + d.weekday + ', ' + d.long + '</p>' +
+              '<p>' + formatTime(data.time) + '</p>' +
+              '<p>' + esc(data.venueName) + '</p>' +
+              '<p>' + esc(data.venueCity) + '</p>' +
+            '</div>' +
+            '<p class="im-rsvp">' + esc(data.rsvp) + '</p>' +
+          '</div>'
+        );
+      }
+    },
+
+    // 2. Classic / Formal Evening — centered, monogram-led, double gold border
+    {
+      id:'classic-formal', name:'Grand Monogram', style:'Classic', theme:'Formal Evening',
+      palette:['#111114','#cda866','#f3efe6'],
+      css:
+        '.inv-classic-formal .inv-inner{background:var(--p1);color:var(--p3);font-family:\'Cormorant Garamond\',Georgia,serif;display:flex;align-items:center;justify-content:center;padding:5cqi;}' +
+        '.inv-classic-formal .ic-border{position:relative;width:100%;height:100%;border:1.5px solid var(--p2);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6cqi;}' +
+        '.inv-classic-formal .ic-border::before{content:\'\';position:absolute;inset:4px;border:1px solid var(--p2);pointer-events:none;}' +
+        '.inv-classic-formal .ic-monogram{position:relative;font-family:\'Cinzel\',serif;font-size:8cqi;color:var(--p2);border:1px solid var(--p2);border-radius:50%;width:16cqi;height:16cqi;display:flex;align-items:center;justify-content:center;margin-bottom:4cqi;}' +
+        '.inv-classic-formal .ic-eyebrow{position:relative;text-transform:uppercase;letter-spacing:.2em;font-size:2.2cqi;color:var(--p2);margin:0 0 3cqi;}' +
+        '.inv-classic-formal .ic-names{position:relative;font-size:7cqi;font-weight:600;margin:0 0 2cqi;}' +
+        '.inv-classic-formal .ic-amp{color:var(--p2);font-style:italic;}' +
+        '.inv-classic-formal .ic-invite{position:relative;font-size:2.6cqi;font-style:italic;margin:0 0 3cqi;color:#d8d3c6;}' +
+        '.inv-classic-formal .ic-rule{position:relative;width:8cqi;height:1px;background:var(--p2);margin:0 0 3cqi;}' +
+        '.inv-classic-formal .ic-date,.inv-classic-formal .ic-time,.inv-classic-formal .ic-venue{position:relative;font-size:2.8cqi;margin:0 0 1cqi;}' +
+        '.inv-classic-formal .ic-rsvp{position:relative;margin-top:3cqi;font-size:2.2cqi;color:var(--p2);}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<div class="ic-border">' +
+            '<div class="ic-monogram">' + esc((data.name1 || '').charAt(0)) + esc((data.name2 || '').charAt(0)) + '</div>' +
+            '<p class="ic-eyebrow">Together with their families</p>' +
+            '<h2 class="ic-names">' + esc(data.name1) + ' <span class="ic-amp">&amp;</span> ' + esc(data.name2) + '</h2>' +
+            '<p class="ic-invite">request the pleasure of your company</p>' +
+            '<div class="ic-rule"></div>' +
+            '<p class="ic-date">' + d.long + '</p>' +
+            '<p class="ic-time">at ' + formatTime(data.time) + '</p>' +
+            '<p class="ic-venue">' + esc(data.venueName) + ' &middot; ' + esc(data.venueCity) + '</p>' +
+            '<p class="ic-rsvp">' + esc(data.rsvp) + '</p>' +
+          '</div>'
+        );
+      }
+    },
+
+    // 3. Rustic / Mountain — CSS mountain silhouette, handwritten names
+    {
+      id:'rustic-mountain', name:'Timberline', style:'Rustic', theme:'Mountain',
+      palette:['#f1e9d8','#5b4632','#7c8d63'],
+      css:
+        '.inv-rustic-mountain .inv-inner{background:var(--p1);font-family:\'Jost\',system-ui,sans-serif;color:var(--p2);}' +
+        '.inv-rustic-mountain .inv-inner::after{content:\'\';position:absolute;inset:3cqi;border:1.5px dashed var(--p2);opacity:.55;pointer-events:none;}' +
+        '.inv-rustic-mountain .ir-mountains{position:absolute;top:0;left:0;right:0;height:38cqi;background:var(--p3);clip-path:polygon(0% 100%,0% 60%,15% 30%,28% 55%,42% 15%,58% 50%,72% 25%,88% 55%,100% 35%,100% 100%);}' +
+        '.inv-rustic-mountain .ir-mountains::after{content:\'\';position:absolute;inset:0;background:var(--p2);opacity:.35;clip-path:polygon(0% 100%,0% 75%,20% 45%,35% 65%,50% 30%,66% 60%,80% 40%,100% 58%,100% 100%);}' +
+        '.inv-rustic-mountain .ir-content{position:absolute;left:0;right:0;bottom:0;top:30cqi;padding:5cqi 6cqi;text-align:center;}' +
+        '.inv-rustic-mountain .ir-eyebrow{text-transform:uppercase;letter-spacing:.25em;font-size:2.2cqi;color:var(--p3);margin:0 0 1cqi;}' +
+        '.inv-rustic-mountain .ir-names{font-family:\'Caveat\',cursive;font-size:11cqi;font-weight:700;margin:0 0 2cqi;line-height:1;}' +
+        '.inv-rustic-mountain .ir-amp{margin:0 1cqi;}' +
+        '.inv-rustic-mountain .ir-line{width:14cqi;border-top:1px dashed var(--p2);margin:0 auto 3cqi;}' +
+        '.inv-rustic-mountain .ir-date,.inv-rustic-mountain .ir-time,.inv-rustic-mountain .ir-venue,.inv-rustic-mountain .ir-city{font-size:2.8cqi;margin:0 0 1cqi;}' +
+        '.inv-rustic-mountain .ir-rsvp{margin-top:3cqi;font-size:2.2cqi;font-style:italic;color:var(--p3);}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<div class="ir-mountains" aria-hidden="true"></div>' +
+          '<div class="ir-content">' +
+            '<p class="ir-eyebrow">Adventure Begins</p>' +
+            '<h2 class="ir-names">' + esc(data.name1) + '<span class="ir-amp">&amp;</span>' + esc(data.name2) + '</h2>' +
+            '<div class="ir-line"></div>' +
+            '<p class="ir-date">' + d.monthName + ' ' + d.day + ', ' + d.year + '</p>' +
+            '<p class="ir-time">' + formatTime(data.time) + '</p>' +
+            '<p class="ir-venue">' + esc(data.venueName) + '</p>' +
+            '<p class="ir-city">' + esc(data.venueCity) + '</p>' +
+            '<p class="ir-rsvp">' + esc(data.rsvp) + '</p>' +
+          '</div>'
+        );
+      }
+    },
+
+    // 4. Minimalist / Winter — type only, no ornament
+    {
+      id:'minimal-winter', name:'Bare Type', style:'Minimalist', theme:'Winter',
+      palette:['#ffffff','#10202f','#8fa7ba'],
+      css:
+        '.inv-minimal-winter .inv-inner{background:var(--p1);color:var(--p2);font-family:-apple-system,\'Segoe UI\',Helvetica,Arial,sans-serif;display:flex;flex-direction:column;padding:7cqi;}' +
+        '.inv-minimal-winter .in-label{margin:0;font-size:2.2cqi;letter-spacing:.15em;color:var(--p3);}' +
+        '.inv-minimal-winter .in-center{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;}' +
+        '.inv-minimal-winter .in-kicker{text-transform:uppercase;letter-spacing:.3em;font-size:2cqi;color:var(--p3);margin:0 0 3cqi;}' +
+        '.inv-minimal-winter .in-names{font-size:6.4cqi;font-weight:600;letter-spacing:.08em;margin:0;}' +
+        '.inv-minimal-winter .in-and{font-size:2.4cqi;font-style:italic;color:var(--p3);margin:1.5cqi 0;}' +
+        '.inv-minimal-winter .in-rule{width:3cqi;height:1px;background:var(--p2);margin:4cqi auto;}' +
+        '.inv-minimal-winter .in-line{font-size:2.4cqi;letter-spacing:.05em;margin:0 0 1cqi;color:var(--p2);}' +
+        '.inv-minimal-winter .in-rsvp{text-align:center;font-size:2cqi;letter-spacing:.1em;color:var(--p3);margin:0;text-transform:uppercase;}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<p class="in-label">' + d.year + '</p>' +
+          '<div class="in-center">' +
+            '<p class="in-kicker">The Marriage Of</p>' +
+            '<h2 class="in-names">' + esc((data.name1 || '').toUpperCase()) + '</h2>' +
+            '<p class="in-and">and</p>' +
+            '<h2 class="in-names">' + esc((data.name2 || '').toUpperCase()) + '</h2>' +
+            '<div class="in-rule"></div>' +
+            '<p class="in-line">' + d.monthName + ' ' + d.day + ' &middot; ' + formatTime(data.time) + '</p>' +
+            '<p class="in-line">' + esc(data.venueName) + ', ' + esc(data.venueCity) + '</p>' +
+          '</div>' +
+          '<p class="in-rsvp">' + esc(data.rsvp) + '</p>'
+        );
+      }
+    },
+
+    // 5. Botanical / Garden — full-bleed color block, corner leaf clusters
+    {
+      id:'botanical-garden', name:'Botanical Bloom', style:'Botanical', theme:'Garden',
+      palette:['#3a5a40','#f4efe4','#a3b18a'],
+      css:
+        '.inv-botanical-garden .inv-inner{background:var(--p1);color:var(--p2);font-family:\'Cormorant Garamond\',Georgia,serif;text-align:center;}' +
+        '.inv-botanical-garden .ib-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8cqi;}' +
+        '.inv-botanical-garden .ib-eyebrow{text-transform:uppercase;letter-spacing:.25em;font-size:2.4cqi;color:var(--p3);margin:0 0 3cqi;}' +
+        '.inv-botanical-garden .ib-names{font-style:italic;font-weight:600;font-size:8cqi;margin:0;line-height:1.05;}' +
+        '.inv-botanical-garden .ib-amp{font-size:3.5cqi;color:var(--p3);margin:1cqi 0;}' +
+        '.inv-botanical-garden .ib-date{margin-top:4cqi;font-size:3cqi;letter-spacing:.05em;}' +
+        '.inv-botanical-garden .ib-details{font-size:2.6cqi;margin:.5cqi 0 0;color:var(--p3);}' +
+        '.inv-botanical-garden .ib-rsvp{margin-top:4cqi;font-size:2.2cqi;font-style:italic;}' +
+        '.inv-botanical-garden .ib-leaf{position:absolute;width:26cqi;height:26cqi;}' +
+        '.inv-botanical-garden .ib-leaf-tl{top:-6cqi;left:-6cqi;}' +
+        '.inv-botanical-garden .ib-leaf-br{bottom:-6cqi;right:-6cqi;transform:rotate(180deg);}' +
+        '.inv-botanical-garden .ib-leaf::before,.inv-botanical-garden .ib-leaf::after{content:\'\';position:absolute;width:60%;height:30%;background:var(--p3);opacity:.55;border-radius:0 100% 0 100%;}' +
+        '.inv-botanical-garden .ib-leaf::before{top:10%;left:15%;transform:rotate(-20deg);}' +
+        '.inv-botanical-garden .ib-leaf::after{top:35%;left:35%;transform:rotate(25deg);background:var(--p2);opacity:.35;}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<div class="ib-leaf ib-leaf-tl" aria-hidden="true"></div>' +
+          '<div class="ib-leaf ib-leaf-br" aria-hidden="true"></div>' +
+          '<div class="ib-content">' +
+            '<p class="ib-eyebrow">We&rsquo;re Getting Married</p>' +
+            '<h2 class="ib-names">' + esc(data.name1) + '</h2>' +
+            '<p class="ib-amp">&amp;</p>' +
+            '<h2 class="ib-names">' + esc(data.name2) + '</h2>' +
+            '<p class="ib-date">' + d.long + '</p>' +
+            '<p class="ib-details">' + formatTime(data.time) + ' &middot; ' + esc(data.venueName) + '</p>' +
+            '<p class="ib-details">' + esc(data.venueCity) + '</p>' +
+            '<p class="ib-rsvp">' + esc(data.rsvp) + '</p>' +
+          '</div>'
+        );
+      }
+    },
+
+    // 6. Art Deco / Formal Evening — symmetric geometric border + sunburst
+    {
+      id:'artdeco-formal', name:'Gatsby Gold', style:'Art Deco', theme:'Formal Evening',
+      palette:['#0d0d0d','#c9a24b','#f6efe0'],
+      css:
+        '.inv-artdeco-formal .inv-inner{background:var(--p1);color:var(--p3);font-family:\'Cinzel\',Georgia,serif;text-align:center;}' +
+        '.inv-artdeco-formal .ad-band{position:absolute;left:0;right:0;height:4cqi;background:repeating-linear-gradient(115deg,var(--p2) 0 2cqi,transparent 2cqi 4cqi);}' +
+        '.inv-artdeco-formal .ad-band-top{top:0;}' +
+        '.inv-artdeco-formal .ad-band-bottom{bottom:0;}' +
+        '.inv-artdeco-formal .ad-content{position:absolute;inset:8cqi 6cqi;display:flex;flex-direction:column;align-items:center;justify-content:center;}' +
+        '.inv-artdeco-formal .ad-sunburst{position:absolute;top:50%;left:50%;width:60cqi;height:60cqi;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,var(--p2) 0 4deg,transparent 4deg 16deg);opacity:.3;border-radius:50%;}' +
+        '.inv-artdeco-formal .ad-kicker{position:relative;text-transform:uppercase;letter-spacing:.3em;font-size:2cqi;color:var(--p2);margin:0 0 3cqi;}' +
+        '.inv-artdeco-formal .ad-names{position:relative;font-size:6.5cqi;letter-spacing:.06em;margin:0;color:var(--p3);}' +
+        '.inv-artdeco-formal .ad-amp{position:relative;color:var(--p2);font-size:3cqi;margin:1.5cqi 0;}' +
+        '.inv-artdeco-formal .ad-date{position:relative;margin-top:4cqi;font-size:2.6cqi;letter-spacing:.15em;color:var(--p2);}' +
+        '.inv-artdeco-formal .ad-line{position:relative;font-size:2.3cqi;letter-spacing:.05em;margin:.6cqi 0 0;}' +
+        '.inv-artdeco-formal .ad-rsvp{position:relative;margin-top:3cqi;font-size:2cqi;color:var(--p2);letter-spacing:.1em;}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<div class="ad-band ad-band-top" aria-hidden="true"></div>' +
+          '<div class="ad-content">' +
+            '<div class="ad-sunburst" aria-hidden="true"></div>' +
+            '<p class="ad-kicker">You&rsquo;re Invited</p>' +
+            '<h2 class="ad-names">' + esc(data.name1) + '</h2>' +
+            '<p class="ad-amp">&amp;</p>' +
+            '<h2 class="ad-names">' + esc(data.name2) + '</h2>' +
+            '<p class="ad-date">' + d.monthName.toUpperCase() + ' ' + d.day + ', ' + d.year + '</p>' +
+            '<p class="ad-line">' + formatTime(data.time) + ' &middot; ' + esc(data.venueName) + '</p>' +
+            '<p class="ad-line">' + esc(data.venueCity) + '</p>' +
+            '<p class="ad-rsvp">' + esc(data.rsvp) + '</p>' +
+          '</div>' +
+          '<div class="ad-band ad-band-bottom" aria-hidden="true"></div>'
+        );
+      }
+    },
+
+    // 7. Whimsical / Beach — off-center, wave + sun, script type
+    {
+      id:'whimsical-beach', name:'Salt & Sun', style:'Whimsical', theme:'Beach',
+      palette:['#4fb3ac','#ffe1a8','#e4572e'],
+      css:
+        '.inv-whimsical-beach .inv-inner{background:var(--p1);font-family:\'Jost\',system-ui,sans-serif;color:#fff;}' +
+        '.inv-whimsical-beach .wh-sun{position:absolute;top:6cqi;right:6cqi;width:16cqi;height:16cqi;background:var(--p3);border-radius:50%;opacity:.9;}' +
+        '.inv-whimsical-beach .wh-wave{position:absolute;left:-5%;right:-5%;bottom:0;height:24cqi;background:var(--p2);border-radius:50% 50% 0 0/18cqi 18cqi 0 0;}' +
+        '.inv-whimsical-beach .wh-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:6cqi 6cqi 10cqi;text-align:left;transform:rotate(-1.5deg);}' +
+        '.inv-whimsical-beach .wh-kicker{font-family:\'Pacifico\',cursive;font-size:3.6cqi;margin:0 0 2cqi;color:#fff;}' +
+        '.inv-whimsical-beach .wh-names{font-family:\'Pacifico\',cursive;font-size:7.5cqi;margin:0 0 3cqi;line-height:1.15;color:var(--p1);}' +
+        '.inv-whimsical-beach .wh-amp{color:var(--p3);}' +
+        '.inv-whimsical-beach .wh-date,.inv-whimsical-beach .wh-venue{font-size:2.6cqi;color:#20504d;margin:0 0 .8cqi;font-weight:500;}' +
+        '.inv-whimsical-beach .wh-rsvp{margin-top:2cqi;font-size:2.2cqi;color:#20504d;font-style:italic;}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<div class="wh-sun" aria-hidden="true"></div>' +
+          '<div class="wh-wave" aria-hidden="true"></div>' +
+          '<div class="wh-content">' +
+            '<p class="wh-kicker">Sand, Sun &amp; Vows</p>' +
+            '<h2 class="wh-names">' + esc(data.name1) + ' <span class="wh-amp">+</span> ' + esc(data.name2) + '</h2>' +
+            '<p class="wh-date">' + d.monthName + ' ' + d.day + ', ' + d.year + ' &middot; ' + formatTime(data.time) + '</p>' +
+            '<p class="wh-venue">' + esc(data.venueName) + ', ' + esc(data.venueCity) + '</p>' +
+            '<p class="wh-rsvp">' + esc(data.rsvp) + '</p>' +
+          '</div>'
+        );
+      }
+    },
+
+    // 8. Vintage / Vintage — sepia letterpress, double border, postmark stamp
+    {
+      id:'vintage-ledger', name:'Faded Ledger', style:'Vintage', theme:'Vintage',
+      palette:['#efe6d3','#6b4a35','#b98b5e'],
+      css:
+        '.inv-vintage-ledger .inv-inner{background:var(--p1);color:var(--p2);font-family:\'Cormorant Garamond\',Georgia,serif;}' +
+        '.inv-vintage-ledger .vl-border{position:absolute;inset:4cqi;border:1px solid var(--p2);padding:5cqi;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}' +
+        '.inv-vintage-ledger .vl-border::before{content:\'\';position:absolute;inset:3px;border:1px solid var(--p3);pointer-events:none;}' +
+        '.inv-vintage-ledger .vl-flourish{font-size:4cqi;color:var(--p3);margin:0 0 2cqi;}' +
+        '.inv-vintage-ledger .vl-kicker{text-transform:uppercase;letter-spacing:.3em;font-size:2.2cqi;margin:0 0 2cqi;color:var(--p3);}' +
+        '.inv-vintage-ledger .vl-names{font-size:6.5cqi;font-weight:600;margin:0;font-variant:small-caps;}' +
+        '.inv-vintage-ledger .vl-amp{font-style:italic;font-size:2.4cqi;color:var(--p3);margin:1cqi 0;}' +
+        '.inv-vintage-ledger .vl-date{margin-top:3cqi;font-size:3cqi;letter-spacing:.15em;}' +
+        '.inv-vintage-ledger .vl-line{font-size:2.5cqi;margin:.5cqi 0 0;}' +
+        '.inv-vintage-ledger .vl-stamp{margin-top:4cqi;display:inline-block;border:1px solid var(--p3);padding:1.5cqi 3cqi;font-size:2cqi;transform:rotate(-3deg);letter-spacing:.05em;color:var(--p3);text-transform:uppercase;}',
+      render(data){
+        var d = dateParts(data.date);
+        return frame(this,
+          '<div class="vl-border">' +
+            '<p class="vl-flourish">&#10087;</p>' +
+            '<p class="vl-kicker">The Wedding Of</p>' +
+            '<h2 class="vl-names">' + esc(data.name1) + '</h2>' +
+            '<p class="vl-amp">and</p>' +
+            '<h2 class="vl-names">' + esc(data.name2) + '</h2>' +
+            '<p class="vl-date">' + d.dotted + '</p>' +
+            '<p class="vl-line">' + formatTime(data.time) + ' &mdash; ' + esc(data.venueName) + '</p>' +
+            '<p class="vl-line">' + esc(data.venueCity) + '</p>' +
+            '<div class="vl-stamp">' + esc(data.rsvp) + '</div>' +
+          '</div>'
+        );
+      }
+    }
+
+    // ---- Add new templates above this line ----
+  ];
+
+  // ---------------------------------------------------------------- //
+  // Shared couple data + filter state                                //
+  // ---------------------------------------------------------------- //
+  const STYLE_OPTIONS = ['Modern','Classic','Rustic','Minimalist','Botanical','Art Deco','Whimsical'];
+  const THEME_OPTIONS = ['Garden','Beach','Mountain','Winter','Vintage','Formal Evening'];
+
+  let data = {
+    name1:'Amelia',
+    name2:'James',
+    date:'2026-09-19',
+    time:'17:00',
+    venueName:'The Old Willow Barn',
+    venueCity:'Hudson Valley, New York',
+    rsvp:'Kindly RSVP by August 1, 2026'
+  };
+
+  const state = { styles:new Set(), themes:new Set(), activeId:null };
+
+  function injectTemplateStyles(){
+    document.getElementById('templateStyles').textContent = TEMPLATES.map(function(t){ return t.css; }).join('\n');
+  }
+
+  function chipHtml(value, kind){
+    return '<button type="button" class="chip" data-kind="' + kind + '" data-value="' + value + '">' + value + '</button>';
+  }
+
+  function toggleChip(el, kind){
+    const set = kind === 'style' ? state.styles : state.themes;
+    const value = el.dataset.value;
+    if(set.has(value)){ set.delete(value); el.classList.remove('active'); }
+    else { set.add(value); el.classList.add('active'); }
+    updateFilterStatus();
+    renderGrid();
+  }
+
+  function renderChips(){
+    const styleWrap = document.getElementById('styleChips');
+    styleWrap.innerHTML = STYLE_OPTIONS.map(function(s){ return chipHtml(s,'style'); }).join('');
+    const themeWrap = document.getElementById('themeChips');
+    themeWrap.innerHTML = THEME_OPTIONS.map(function(t){ return chipHtml(t,'theme'); }).join('');
+    styleWrap.querySelectorAll('.chip').forEach(function(el){ el.addEventListener('click', function(){ toggleChip(el,'style'); }); });
+    themeWrap.querySelectorAll('.chip').forEach(function(el){ el.addEventListener('click', function(){ toggleChip(el,'theme'); }); });
+  }
+
+  function updateFilterStatus(){
+    const count = state.styles.size + state.themes.size;
+    document.getElementById('filterCount').textContent = count + ' filter' + (count === 1 ? '' : 's') + ' active';
+    document.getElementById('clearFilters').disabled = count === 0;
+  }
+
+  function clearFilters(){
+    state.styles.clear();
+    state.themes.clear();
+    document.querySelectorAll('.chip.active').forEach(function(c){ c.classList.remove('active'); });
+    updateFilterStatus();
+    renderGrid();
+  }
+
+  function filteredTemplates(){
+    return TEMPLATES.filter(function(t){
+      const styleOk = state.styles.size === 0 || state.styles.has(t.style);
+      const themeOk = state.themes.size === 0 || state.themes.has(t.theme);
+      return styleOk && themeOk;
+    });
+  }
+
+  function renderGrid(){
+    const list = filteredTemplates();
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('emptyState');
+
+    if(list.length === 0){
+      grid.innerHTML = '';
+      grid.hidden = true;
+      empty.hidden = false;
+      return;
+    }
+
+    grid.hidden = false;
+    empty.hidden = true;
+    grid.innerHTML = list.map(function(t){
+      return '<article class="card" data-id="' + t.id + '">' +
+        '<div class="card-preview">' + t.render(data) + '</div>' +
+        '<div class="card-meta">' +
+          '<h3>' + t.name + '</h3>' +
+          '<div class="tags"><span class="tag">' + t.style + '</span><span class="tag">' + t.theme + '</span></div>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    grid.querySelectorAll('.card').forEach(function(card){
+      card.addEventListener('click', function(){ openModal(card.dataset.id); });
+    });
+  }
+
+  // ---------------------------------------------------------------- //
+  // Modal: larger preview, copy HTML, print                          //
+  // ---------------------------------------------------------------- //
+  function openModal(id){
+    const t = TEMPLATES.find(function(x){ return x.id === id; });
+    if(!t) return;
+    state.activeId = id;
+    document.getElementById('modalPreview').innerHTML = t.render(data);
+    document.getElementById('modalName').textContent = t.name;
+    document.getElementById('modalTags').innerHTML = '<span class="tag">' + t.style + '</span><span class="tag">' + t.theme + '</span>';
+    document.getElementById('copyFeedback').textContent = '';
+    document.getElementById('modalOverlay').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(){
+    document.getElementById('modalOverlay').hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function buildStandaloneHtml(t){
+    return '<style>\n' + t.css + '\n</style>\n' + t.render(data);
+  }
+
+  function showCopyFeedback(msg){
+    const el = document.getElementById('copyFeedback');
+    el.textContent = msg;
+    setTimeout(function(){ if(el.textContent === msg) el.textContent = ''; }, 2500);
+  }
+
+  async function copyActiveHtml(){
+    const t = TEMPLATES.find(function(x){ return x.id === state.activeId; });
+    if(!t) return;
+    const html = buildStandaloneHtml(t);
+    try{
+      await navigator.clipboard.writeText(html);
+      showCopyFeedback('Copied to clipboard.');
+    }catch(err){
+      const ta = document.createElement('textarea');
+      ta.value = html;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try{
+        document.execCommand('copy');
+        showCopyFeedback('Copied to clipboard.');
+      }catch(e2){
+        showCopyFeedback('Copy failed — select and copy manually.');
+      }
+      document.body.removeChild(ta);
+    }
+  }
+
+  function printActive(){
+    const t = TEMPLATES.find(function(x){ return x.id === state.activeId; });
+    if(!t) return;
+    document.getElementById('printRoot').innerHTML = t.render(data);
+    window.print();
+  }
+
+  // ---------------------------------------------------------------- //
+  // Customize panel — live-updates every visible template            //
+  // ---------------------------------------------------------------- //
+  function bindCustomizeInputs(){
+    const map = {
+      'in-name1':'name1', 'in-name2':'name2', 'in-date':'date', 'in-time':'time',
+      'in-venueName':'venueName', 'in-venueCity':'venueCity', 'in-rsvp':'rsvp'
+    };
+    Object.keys(map).forEach(function(elId){
+      const key = map[elId];
+      const el = document.getElementById(elId);
+      el.value = data[key];
+      el.addEventListener('input', function(){
+        data[key] = el.value;
+        renderGrid();
+        if(!document.getElementById('modalOverlay').hidden && state.activeId){
+          const t = TEMPLATES.find(function(x){ return x.id === state.activeId; });
+          document.getElementById('modalPreview').innerHTML = t.render(data);
+        }
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------- //
+  // Init                                                              //
+  // ---------------------------------------------------------------- //
+  function init(){
+    injectTemplateStyles();
+    renderChips();
+    updateFilterStatus();
+    bindCustomizeInputs();
+    renderGrid();
+
+    document.getElementById('clearFilters').addEventListener('click', clearFilters);
+    document.getElementById('emptyClear').addEventListener('click', clearFilters);
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e){
+      if(e.target.id === 'modalOverlay') closeModal();
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && !document.getElementById('modalOverlay').hidden) closeModal();
+    });
+    document.getElementById('copyHtmlBtn').addEventListener('click', copyActiveHtml);
+    document.getElementById('printBtn').addEventListener('click', printActive);
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
