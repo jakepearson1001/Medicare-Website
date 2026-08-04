@@ -33,7 +33,7 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-2">
           <span
-            className={`relative block h-10 w-10 overflow-hidden rounded-full border-2 border-ink bg-ink ${
+            className={`relative block h-10 w-10 overflow-hidden rounded-full ${
               blink ? 'animate-blink' : ''
             }`}
           >
@@ -42,7 +42,7 @@ export default function Header() {
               alt="NPC Outfitters"
               fill
               sizes="40px"
-              className="object-cover"
+              className="object-cover scale-110"
               priority
             />
           </span>

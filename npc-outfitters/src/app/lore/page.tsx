@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Lore',
@@ -22,10 +23,17 @@ export default function LorePage() {
   return (
     <div className="px-4 py-10 sm:py-14">
       <div className="mx-auto max-w-3xl">
-        <p className="mb-2 font-mono text-xs uppercase tracking-widest text-npcgray-dark">
+        <Image
+          src="/logo-full.png"
+          alt="NPC Outfitters — Est. 2024"
+          width={220}
+          height={220}
+          className="mx-auto mb-8 h-auto w-40 sm:w-52"
+        />
+        <p className="mb-2 text-center font-mono text-xs uppercase tracking-widest text-npcgray-dark">
           Lore / Origin Story
         </p>
-        <h1 className="mb-8 font-display text-3xl uppercase sm:text-4xl">
+        <h1 className="mb-8 text-center font-display text-3xl uppercase sm:text-4xl">
           How We Became A Brand
         </h1>
 

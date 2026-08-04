@@ -1,14 +1,21 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 import { HERO_TAGLINES } from '@/lib/copy/taglines';
 
-export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const alt = 'NPC Outfitters — Default Skins for Real Life';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+function getLogoDataUri() {
+  const buffer = readFileSync(join(process.cwd(), 'public', 'logo.png'));
+  return `data:image/png;base64,${buffer.toString('base64')}`;
+}
+
 export default function OpengraphImage() {
   const tagline = HERO_TAGLINES[Math.floor(Math.random() * HERO_TAGLINES.length)];
+  const logoDataUri = getLogoDataUri();
 
   return new ImageResponse(
     (
@@ -25,37 +32,8 @@ export default function OpengraphImage() {
           position: 'relative',
         }}
       >
-        <div
-          style={{
-            width: 140,
-            height: 140,
-            borderRadius: '50%',
-            backgroundColor: '#141414',
-            border: '6px solid #141414',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 40,
-          }}
-        >
-          <div
-            style={{
-              width: 96,
-              height: 96,
-              borderRadius: '50%',
-              backgroundColor: '#9A9A9A',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 34,
-              fontWeight: 900,
-              color: '#141414',
-              letterSpacing: -1,
-            }}
-          >
-            NPC
-          </div>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoDataUri} width={150} height={150} alt="" style={{ marginBottom: 40 }} />
         <div
           style={{
             fontSize: 64,
