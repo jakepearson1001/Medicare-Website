@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-desk font-sans text-slate-200 antialiased;
+}
+
+/* Visible focus rings everywhere, brass to match the accent. */
+:focus-visible {
+  outline: 2px solid #c9a24b;
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+/* Ticker marquee — duplicated content scrolls -50% for a seamless loop. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll 45s linear infinite;
+  will-change: transform;
+}
+
+.ticker-strip:hover .ticker-track,
+.ticker-strip:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+.win-transition {
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+  .win-transition,
+  * {
+    transition: none !important;
+  }
+}
+
+/* Thin scrollbars that fit the dark palette. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3a4d transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2a3a4d;
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
