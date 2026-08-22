@@ -19,7 +19,7 @@ interface DialogueBoxProps {
 export default function DialogueBox({
   lines,
   speaker = 'NPC',
-  typingSpeedMs = 28,
+  typingSpeedMs = 55,
   className,
   rerollKey,
 }: DialogueBoxProps) {
