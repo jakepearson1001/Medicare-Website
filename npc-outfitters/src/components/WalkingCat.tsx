@@ -8,12 +8,18 @@ const CRITTER_TYPES = [
   { key: 'burger', emoji: '🍔' },
   { key: 'ape', emoji: '🦍' },
   { key: 'croc', emoji: '🐊' },
-  { key: 'blob', emoji: '🟣' },
+  { key: 'ufo', emoji: '🛸' },
   { key: 'spiky', emoji: '🦔' },
-  { key: 'suit', emoji: '🕴️' },
+  { key: 'santa', emoji: '🎅🏿' },
+  { key: 'ninja', emoji: '🥷' },
+  { key: 'moon', emoji: '🌝' },
+  { key: 'frog', emoji: '🐸' },
+  { key: 'clown', emoji: '🤡' },
 ];
 
-const MAX_CRITTERS = 6;
+// One slot per character type — every type can be on screen at once, and
+// the cat refuses (wordlessly) past that.
+const MAX_CRITTERS = CRITTER_TYPES.length;
 // Wide enough that the cat's speech bubble (centered on it, ~210px max)
 // never clips off the side of the viewport.
 const EDGE_MARGIN = 120;
@@ -22,12 +28,6 @@ const TRAVEL_MS = 3000;
 // After this long with no clicks the whole scene despawns and the cat walks
 // back to its corner, so the page never accumulates critters forever.
 const IDLE_RESET_MS = 30000;
-
-const AT_CAPACITY_LINES = [
-  'Six. That is the limit. I do not make the rules. I am the rules.',
-  'The render budget is full. Take one away first.',
-  'No. Six is already too many. Look at them.',
-];
 
 interface Critter {
   id: number;
@@ -55,6 +55,7 @@ export default function WalkingCat() {
   const [catState, setCatState] = useState<'idle' | 'firing' | 'mad'>('idle');
   const [bubble, setBubble] = useState<string | null>('Do not pet the cat.');
   const [frozen, setFrozen] = useState(false);
+  const [swiping, setSwiping] = useState(false);
 
   const catRef = useRef<HTMLButtonElement>(null);
   const critterRefs = useRef<Record<number, HTMLButtonElement | null>>({});
@@ -179,14 +180,18 @@ export default function WalkingCat() {
     bumpIdle();
 
     if (critters.length >= MAX_CRITTERS) {
+      // No dialogue at capacity — the cat just gets angry and swipes at you.
       busy.current = true;
       setCatState('mad');
-      setBubble(AT_CAPACITY_LINES[Math.floor(Math.random() * AT_CAPACITY_LINES.length)]);
+      setBubble(null);
+      setSwiping(false);
+      // Re-arm on the next frame so repeat clicks restart the animation.
+      requestAnimationFrame(() => setSwiping(true));
+      later(() => setSwiping(false), 520);
       later(() => {
         setCatState('idle');
-        setBubble(null);
         busy.current = false;
-      }, 2200);
+      }, 1100);
       return;
     }
 
@@ -297,13 +302,22 @@ export default function WalkingCat() {
           type="button"
           onClick={handleCatClick}
           aria-label="A cat. Do not pet it. Clicking it summons a character."
-          className={`block text-4xl leading-none ${catFacingLeft ? '-scale-x-100' : ''} ${
-            catState === 'mad' ? 'animate-glitch' : ''
+          className={`block text-4xl leading-none ${
+            catState === 'mad' ? 'animate-cat-shake' : catFacingLeft ? '-scale-x-100' : ''
           }`}
           style={catState === 'firing' ? { filter: 'drop-shadow(0 0 9px #E4322E)' } : undefined}
         >
           {catEmoji}
         </button>
+
+        {swiping && (
+          <span
+            className="pointer-events-none absolute left-1/2 top-1/2 z-[47] animate-paw-swipe text-6xl"
+            aria-hidden="true"
+          >
+            🐾
+          </span>
+        )}
       </div>
     </>
   );

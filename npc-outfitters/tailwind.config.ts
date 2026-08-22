@@ -45,6 +45,17 @@ const config: Config = {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0' },
         },
+        // A paw lunging out of the screen at the viewer.
+        pawSwipe: {
+          '0%': { transform: 'translate(-50%, -50%) scale(0.35) rotate(-30deg)', opacity: '0' },
+          '30%': { opacity: '1' },
+          '100%': { transform: 'translate(-50%, -50%) scale(2.8) rotate(18deg)', opacity: '0' },
+        },
+        catShake: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '25%': { transform: 'rotate(-13deg)' },
+          '75%': { transform: 'rotate(13deg)' },
+        },
       },
       animation: {
         blink: 'blink 0.7s ease-in-out 2',
@@ -52,6 +63,8 @@ const config: Config = {
         scan: 'scan 8s linear infinite',
         marquee: 'marquee 120s linear infinite',
         caret: 'caret 1s step-end infinite',
+        'paw-swipe': 'pawSwipe 0.5s ease-out forwards',
+        'cat-shake': 'catShake 0.32s ease-in-out 3',
       },
     },
   },
