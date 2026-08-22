@@ -8,6 +8,7 @@ import InventoryDrawer from '@/components/InventoryDrawer';
 import KonamiListener from '@/components/KonamiListener';
 import RareEventRoller from '@/components/RareEventRoller';
 import ExitIntentDialogue from '@/components/ExitIntentDialogue';
+import WalkingCat from '@/components/WalkingCat';
 
 const archivoBlack = Archivo_Black({
   subsets: ['latin'],
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <KonamiListener />
         <RareEventRoller />
         <ExitIntentDialogue />
+        <WalkingCat />
       </body>
     </html>
   );
