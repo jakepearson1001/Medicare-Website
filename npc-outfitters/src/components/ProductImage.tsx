@@ -9,17 +9,23 @@ interface ProductImageProps {
   className?: string;
 }
 
+// Tried in order. Printful's mockup downloads are usually .png, phone photos
+// are .jpg, so accept whichever you happen to drop in.
+const EXTENSIONS = ['jpg', 'png', 'jpeg', 'webp'];
+
 /**
- * Renders a product render if one exists at /public/products/<slug>.jpg (or
- * .png/.webp), and falls back to an on-brand generated placeholder swatch
- * if it doesn't. To go live with real product photography, just drop a
- * file named `<slug>.jpg` (matching `Product.slug` in lib/products.ts) into
- * `public/products/` — no code changes needed. See README.md.
+ * Renders a product image if one exists at /public/products/<slug>.<ext>,
+ * and falls back to an on-brand generated placeholder swatch if it doesn't.
+ *
+ * To use real product renders, just drop a file named after the product's
+ * `slug` (see lib/products.ts) into `public/products/` — any of the
+ * extensions above works, and no code change is needed. See README.md.
  */
 export default function ProductImage({ product, className }: ProductImageProps) {
-  const [failed, setFailed] = useState(false);
+  const [extIndex, setExtIndex] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
   const isMissingTexture = product.slug === 'missing-texture-hoodie';
+  const exhausted = extIndex >= EXTENSIONS.length;
 
   useEffect(() => {
     // The browser starts loading <img> as soon as it's parsed, which can
@@ -27,11 +33,11 @@ export default function ProductImage({ product, className }: ProductImageProps) 
     // Catch that already-failed case here on mount.
     const img = imgRef.current;
     if (img && img.complete && img.naturalWidth === 0) {
-      setFailed(true);
+      setExtIndex((i) => i + 1);
     }
-  }, []);
+  }, [extIndex]);
 
-  if (failed) {
+  if (exhausted) {
     return (
       <div
         className={cn(
@@ -53,11 +59,13 @@ export default function ProductImage({ product, className }: ProductImageProps) 
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
+      // Remount on each attempt so a failed src doesn't stick.
+      key={EXTENSIONS[extIndex]}
       ref={imgRef}
-      src={`/products/${product.slug}.jpg`}
+      src={`/products/${product.slug}.${EXTENSIONS[extIndex]}`}
       alt={product.name}
       className={cn('aspect-square w-full border-2 border-ink object-cover', className)}
-      onError={() => setFailed(true)}
+      onError={() => setExtIndex((i) => i + 1)}
     />
   );
 }
