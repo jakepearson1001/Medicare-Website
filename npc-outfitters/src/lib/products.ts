@@ -174,6 +174,29 @@ export const PRODUCTS: Product[] = [
     color: '#F5F1E8',
     imagePlaceholder: 'mug-dialogue',
   },
+  {
+    slug: 'its-not-gay-if-its-tsa',
+    name: 'It’s Not Gay If It’s TSA',
+    shortName: 'TSA Tee',
+    productClass: 'ironic',
+    price: 32,
+    rarity: 'common',
+    npcLine:
+      'A shirt about airport security. The graphic explains itself. I will not be explaining it.',
+    honestDisclosure:
+      'Unisex organic oversized high-neck tee. Also produced in white and heather grey. This is the single loudest item in a store that otherwise sells gray.',
+    stats: [
+      { label: 'Attention', value: '+10', positive: true },
+      { label: 'Comfort', value: '+6', positive: true },
+      { label: 'Anonymity', value: '-10', positive: false },
+      { label: 'Airport Small Talk', value: '+7', positive: true },
+    ],
+    durability: 96,
+    classRequirement: 'Comfort with sustained eye contact at security.',
+    variants: APPAREL_SIZES.map((size) => ({ size, inStock: true })),
+    color: '#141414',
+    imagePlaceholder: 'tee-tsa',
+  },
 
   // --- THE META CLASS ------------------------------------------------------
   {
