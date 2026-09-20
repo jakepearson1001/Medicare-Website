@@ -54,6 +54,12 @@ export const useCartStore = create<CartState>()(
         })),
       clear: () => set({ lines: [] }),
     }),
-    { name: 'npc-outfitters-inventory' }
+    {
+      name: 'npc-outfitters-inventory',
+      // Persist only the cart contents. `isOpen` is transient UI state —
+      // persisting it meant the drawer reopened itself on the next page
+      // load, including when a buyer returned from Square's checkout.
+      partialize: (state) => ({ lines: state.lines }),
+    }
   )
 );

@@ -1,20 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { CartLine } from '@/lib/commerce/types';
-import { createSquareCheckout } from '@/lib/payments/square';
+import { createSquareCheckout, UnfulfillableItemsError } from '@/lib/payments/square';
 
 /**
- * Checkout entrypoint. Tries the Square checkout stub first (this store's
- * primary payment path — see lib/payments/square.ts); if Square isn't
- * configured, falls through to the mock commerce provider, which returns
- * `{ url: null }`. The cart UI (InventoryDrawer) treats `url: null` as
- * "no payment processor connected yet" and shows the in-voice fallback
- * dialogue instead of erroring.
+ * Checkout entrypoint. Creates a Square hosted checkout and hands back the
+ * URL for the browser to follow. If Square isn't configured yet this returns
+ * `{ url: null }`, which the cart drawer renders as the in-voice
+ * "checkout not yet implemented in this build of reality" dialogue.
  *
- * Once Square is wired up and a payment succeeds, its success webhook /
- * redirect handler should call `createPrintfulOrder` from
- * lib/fulfillment/printful.ts to send the order to Printful for printing
- * and shipping.
+ * Nothing is fulfilled here — /api/webhooks/square does that once Square
+ * confirms the payment completed.
  */
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   let lines: CartLine[] = [];
   try {
@@ -31,8 +29,26 @@ export async function POST(request: Request) {
   try {
     const { url } = await createSquareCheckout(lines);
     return NextResponse.json({ url });
-  } catch {
-    // Square not implemented yet — fall back to mock mode rather than 500.
+  } catch (error) {
+    if (error instanceof UnfulfillableItemsError) {
+      // Deliberately blocked rather than broken: these items have no Printful
+      // variant mapped, so a sale would take money for something that can't ship.
+      console.error('[checkout] Blocked unfulfillable items:', error.items);
+      return NextResponse.json(
+        {
+          url: null,
+          error: 'unfulfillable',
+          message:
+            'These items cannot be shipped yet: ' +
+            error.items.join(', ') +
+            '. Restocks when the algorithm feels like it.',
+        },
+        { status: 409 }
+      );
+    }
+
+    console.error('[checkout] Square checkout failed:', error);
+    // Fall back to mock-mode messaging rather than a raw 500 in the UI.
     return NextResponse.json({ url: null });
   }
 }

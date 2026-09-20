@@ -14,6 +14,16 @@ export interface StatLine {
 export interface ProductVariant {
   size: string;
   inStock: boolean;
+  /**
+   * Printful's `sync_variant_id` for this exact product+size, used to place
+   * the fulfillment order. Find it in Printful under Stores → your API store
+   * → the product, or via GET https://api.printful.com/store/products/{id}.
+   *
+   * Until this is set, the item cannot be auto-fulfilled. Checkout refuses
+   * to sell unmapped items whenever PRINTFUL_API_KEY is configured — see
+   * lib/fulfillment/printful.ts.
+   */
+  printfulVariantId?: number;
 }
 
 export interface Product {

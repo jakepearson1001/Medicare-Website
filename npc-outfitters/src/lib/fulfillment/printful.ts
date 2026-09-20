@@ -1,44 +1,26 @@
 import type { CartLine } from '../commerce/types';
+import { getProductBySlug } from '../products';
 
 /**
  * PRIMARY FULFILLMENT PATH: Printful.
  *
- * NPC Outfitters is set up to take payment via Square (lib/payments/square.ts)
- * and, on successful payment, push the order straight to Printful so it
- * gets printed and shipped without you touching it. This module is a
- * clearly-marked stub — nothing here runs until you fill in the TODOs.
+ * Called by /api/webhooks/square once a payment actually completes. Sends
+ * the order to Printful, who prints, packs and ships it.
  *
- * How the pieces fit together:
- * 1. Customer pays via Square Checkout (lib/payments/square.ts).
- * 2. Square's success webhook/redirect hits a server route in this app.
- * 3. That route calls `createPrintfulOrder` below with the cart lines +
- *    shipping address from the Square order.
- * 4. Printful receives the order, prints/packs/ships it, and updates
- *    tracking — Printful is the actual "print + fulfillment" partner, so
- *    once this call succeeds you don't do anything else manually.
+ * Required env vars (see .env.example):
+ *   PRINTFUL_API_KEY       from Printful → Settings → API
+ *   PRINTFUL_AUTO_CONFIRM  "true" submits straight to production;
+ *                          anything else (the default) creates a DRAFT you
+ *                          confirm by hand in the Printful dashboard.
  *
- * TODO to go live:
- * 1. Create a Printful account and a Printful Store (Printful dashboard →
- *    Stores → "add store" → choose "API" as the platform for a custom
- *    storefront like this one).
- * 2. Generate a Printful API key (Printful dashboard → Settings → API) and
- *    set it as PRINTFUL_API_KEY (see .env.example).
- * 3. In Printful, create/sync the products from this site (Gray Hoodie,
- *    Base Layer tee, etc.) as Printful "sync products" so each of our
- *    `Product.slug` values maps to a real Printful `sync_variant_id` per
- *    size. Store that mapping (e.g. a `printfulVariantId` field added to
- *    `Product`/`ProductVariant` in lib/commerce/types.ts and lib/products.ts).
- * 4. Implement `createPrintfulOrder` using the Printful API
- *    (`POST https://api.printful.com/orders`) with the recipient address
- *    and an array of `{ sync_variant_id, quantity }` line items.
- * 5. Optionally set `confirm: true` in the request to skip Printful's draft
- *    order review step and auto-submit to production immediately.
- * 6. Handle Printful webhooks (order shipped, package returned, etc.) at a
- *    new route, e.g. app/api/webhooks/printful/route.ts, to keep customers
- *    updated on tracking.
+ * The draft default is deliberate: until you've watched a couple of real
+ * orders arrive correctly, a draft costs nothing to discard while a
+ * confirmed order is money spent on a misprint.
  *
- * Docs: https://developers.printful.com/docs/
+ * Before any of this works, each product+size needs its Printful
+ * `sync_variant_id` recorded in lib/products.ts — see `apparelVariants`.
  */
+
 export interface ShippingAddress {
   name: string;
   address1: string;
@@ -47,20 +29,97 @@ export interface ShippingAddress {
   stateCode: string;
   countryCode: string;
   zip: string;
-  email: string;
+  email?: string;
+  phone?: string;
+}
+
+const PRINTFUL_API = 'https://api.printful.com';
+
+export function printfulConfigured(): boolean {
+  return Boolean(process.env.PRINTFUL_API_KEY);
+}
+
+/** True when this exact product+size has a Printful variant mapped. */
+export function isFulfillable(slug: string, size: string): boolean {
+  const product = getProductBySlug(slug);
+  const variant = product?.variants.find((v) => v.size === size);
+  return Boolean(variant?.printfulVariantId);
 }
 
 export async function createPrintfulOrder(
-  _lines: CartLine[],
-  _shippingAddress: ShippingAddress
-): Promise<{ printfulOrderId: string | null }> {
+  lines: CartLine[],
+  shippingAddress: ShippingAddress,
+  externalId: string
+): Promise<{ printfulOrderId: string | null; status: 'created' | 'duplicate' | 'skipped' }> {
   const apiKey = process.env.PRINTFUL_API_KEY;
+  if (!apiKey) return { printfulOrderId: null, status: 'skipped' };
 
-  if (!apiKey) {
-    return { printfulOrderId: null };
+  const items: { sync_variant_id: number; quantity: number }[] = [];
+  const unmapped: string[] = [];
+
+  for (const line of lines) {
+    const product = getProductBySlug(line.slug);
+    const variant = product?.variants.find((v) => v.size === line.size);
+    if (!variant?.printfulVariantId) {
+      unmapped.push(`${line.slug} (${line.size})`);
+      continue;
+    }
+    items.push({
+      sync_variant_id: variant.printfulVariantId,
+      quantity: Math.max(1, Math.floor(line.quantity)),
+    });
   }
 
-  // TODO: replace with a real Printful `POST /orders` call once product
-  // variants are synced and mapped (see step 3 above).
-  throw new Error('createPrintfulOrder is not implemented yet. See lib/fulfillment/printful.ts.');
+  // Never ship a partial order. If anything is unmapped, bail loudly and
+  // leave the whole thing for manual fulfillment rather than sending the
+  // buyer two of three items with no explanation.
+  if (unmapped.length > 0) {
+    throw new Error(
+      `Refusing to create a partial Printful order for ${externalId}. ` +
+        `Unmapped variants: ${unmapped.join(', ')}. Fulfil this order manually ` +
+        `and add the missing sync_variant_ids to lib/products.ts.`
+    );
+  }
+  if (items.length === 0) return { printfulOrderId: null, status: 'skipped' };
+
+  const confirm = process.env.PRINTFUL_AUTO_CONFIRM === 'true';
+
+  const res = await fetch(`${PRINTFUL_API}/orders${confirm ? '?confirm=1' : ''}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      // Square's order id doubles as our idempotency key: Printful rejects a
+      // second order with the same external_id, so a replayed webhook can't
+      // print the same shirt twice.
+      external_id: externalId,
+      recipient: {
+        name: shippingAddress.name,
+        address1: shippingAddress.address1,
+        address2: shippingAddress.address2,
+        city: shippingAddress.city,
+        state_code: shippingAddress.stateCode,
+        country_code: shippingAddress.countryCode,
+        zip: shippingAddress.zip,
+        email: shippingAddress.email,
+        phone: shippingAddress.phone,
+      },
+      items,
+    }),
+  });
+
+  const body = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    const message = body?.result ?? body?.error?.message ?? `HTTP ${res.status}`;
+    if (typeof message === 'string' && /external_id/i.test(message)) {
+      // Already created by an earlier delivery of this same webhook.
+      return { printfulOrderId: null, status: 'duplicate' };
+    }
+    throw new Error(`Printful createOrder failed (${res.status}): ${JSON.stringify(message)}`);
+  }
+
+  return { printfulOrderId: String(body?.result?.id ?? ''), status: 'created' };
 }

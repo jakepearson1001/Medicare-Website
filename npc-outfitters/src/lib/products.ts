@@ -13,6 +13,25 @@ import type { Product, ProductClass } from './commerce/types';
 const APPAREL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 const ONE_SIZE = ['One Size'];
 
+/**
+ * Build apparel variants, optionally mapping each size to its Printful
+ * `sync_variant_id` so the order can be auto-fulfilled. Example:
+ *
+ *   variants: apparelVariants({ S: 4012345678, M: 4012345679 })
+ *
+ * Sizes you leave out still appear on the site but can't be auto-fulfilled;
+ * checkout blocks them once PRINTFUL_API_KEY is set. Find the IDs with:
+ *   curl -H "Authorization: Bearer $PRINTFUL_API_KEY" \
+ *        https://api.printful.com/store/products
+ */
+function apparelVariants(printfulIds: Record<string, number> = {}) {
+  return APPAREL_SIZES.map((size) => ({
+    size,
+    inStock: true,
+    printfulVariantId: printfulIds[size],
+  }));
+}
+
 export const PRODUCTS: Product[] = [
   // --- THE DEFAULT CLASS -----------------------------------------------
   {
@@ -193,7 +212,10 @@ export const PRODUCTS: Product[] = [
     ],
     durability: 96,
     classRequirement: 'Comfort with sustained eye contact at security.',
-    variants: APPAREL_SIZES.map((size) => ({ size, inStock: true })),
+    // TODO: paste this product's Printful sync_variant_id for each size,
+    // e.g. apparelVariants({ S: 4012345678, M: 4012345679, ... }).
+    // Until then this item can't be auto-fulfilled.
+    variants: apparelVariants(),
     color: '#141414',
     imagePlaceholder: 'tee-tsa',
   },

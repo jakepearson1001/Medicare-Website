@@ -49,7 +49,9 @@ export default function InventoryDrawer() {
         window.location.href = data.url;
         return;
       }
-      setCheckoutMessage(MICROCOPY.checkoutNotWired);
+      // An item with no Printful variant mapped can't actually ship, so
+      // checkout blocks it and says which one rather than taking the money.
+      setCheckoutMessage(data.message ?? MICROCOPY.checkoutNotWired);
     } catch {
       setCheckoutMessage(MICROCOPY.checkoutNotWired);
     } finally {

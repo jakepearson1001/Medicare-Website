@@ -52,62 +52,111 @@ header, favicon, and the generated OG image badge.
 
 ---
 
-## 3. Connecting Square (payments)
+## 3. Going live: Square + Printful
 
-NPC Outfitters' primary payment path is **Square**. Everything is stubbed
-and clearly marked — nothing charges a card until you fill this in.
+Checkout and automatic fulfillment are **implemented**, not stubbed. They
+stay dormant until the env vars below are set — with none of them, the site
+runs in mock mode and the cart shows the in-voice "checkout not yet
+implemented in this build of reality" message instead of charging anyone.
 
-1. Create a Square app in the [Square Developer
-   Dashboard](https://developer.squareup.com/apps) and grab your
-   **Access Token** and **Location ID** (sandbox first, then production).
-2. Copy `.env.example` to `.env.local` and fill in:
-   ```
-   SQUARE_ACCESS_TOKEN=...
-   SQUARE_LOCATION_ID=...
-   NEXT_PUBLIC_SQUARE_APP_ID=...   # only needed for the in-page card form approach
-   SQUARE_ENV=sandbox              # or "production"
-   ```
-3. Implement `createSquareCheckout` in **`src/lib/payments/square.ts`** —
-   the file has step-by-step TODOs for both the hosted Checkout Links
-   approach (fastest) and the Web Payments SDK approach (more control).
-4. That's the only file the rest of the app depends on:
-   `src/app/api/checkout/route.ts` already calls it and falls back to mock
-   mode automatically if it's not implemented yet.
+### How the money path works
 
-## 4. Connecting Printful (fulfillment)
+```
+cart → POST /api/checkout → Square hosted checkout page (card + address)
+                                        ↓ buyer pays
+     Printful order ← POST /api/webhooks/square ← Square "payment.updated"
+                                        ↓
+                          buyer redirected to /loot-acquired
+```
 
-Once Square takes a payment, the order should be sent to **Printful** so it
-gets printed and shipped automatically.
+Two properties worth knowing, because they're deliberate:
 
-1. Create a Printful account → Stores → add a store → choose **API** as the
-   platform.
-2. Generate an API key: Printful dashboard → Settings → API.
-3. Set `PRINTFUL_API_KEY` in `.env.local`.
-4. In Printful, sync each product (Gray Hoodie, Base Layer tee, etc.) and
-   note each size's `sync_variant_id`. Add that mapping to the relevant
-   `Product`/`ProductVariant` entries in `src/lib/products.ts` (see the
-   TODO comments in `src/lib/fulfillment/printful.ts` for the exact shape).
-5. Implement `createPrintfulOrder` in **`src/lib/fulfillment/printful.ts`**
-   — call it from your Square success webhook/redirect handler with the
-   cart lines and shipping address.
+- **Prices are read from `src/lib/products.ts` on the server**, never from
+  the browser's cart payload. A tampered cart can't change what's charged.
+- **Nothing is sent to the printer until Square confirms payment
+  completed.** An abandoned checkout or declined card can't create a print
+  job, because fulfillment only ever happens in the webhook.
 
-This is the intended default path (Square + Printful, no middleman). If
-you'd rather run everything through **Shopify** instead (Shopify + a
-dropship app as the fulfillment backend), there's an alternate,
-equally-stubbed provider at `src/lib/commerce/shopify-provider.ts` — swap
-the export in `src/lib/commerce/index.ts` to use it instead of
-`MockCommerceProvider`.
+### Step 1 — Square credentials
+
+Create an app in the [Square Developer Dashboard](https://developer.squareup.com/apps),
+then set in `.env.local` (and in your host's env vars):
+
+```
+SQUARE_ACCESS_TOKEN=...
+SQUARE_LOCATION_ID=...
+SQUARE_ENV=sandbox          # switch to "production" when you're ready
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+```
+
+Use **sandbox** first. Square's sandbox gives you test card numbers so you
+can run the whole flow without real money.
+
+### Step 2 — Square webhook (this is what triggers fulfillment)
+
+1. Square Developer Dashboard → your app → **Webhooks → Add subscription**
+2. URL: `https://<your-domain>/api/webhooks/square`
+3. Subscribe to the **`payment.updated`** event
+4. Copy the **signature key** into `SQUARE_WEBHOOK_SIGNATURE_KEY`
+5. Set `SQUARE_WEBHOOK_URL` to the *exact* URL from step 2
+
+Step 5 matters more than it looks: Square computes the signature over that
+URL string concatenated with the request body, so `http` vs `https` or a
+stray trailing slash makes every webhook fail verification and silently
+stop fulfilling orders.
+
+### Step 3 — Printful
+
+1. Printful → Stores → add store → choose **API** as the platform
+2. Printful → Settings → API → generate a key → `PRINTFUL_API_KEY`
+3. Leave `PRINTFUL_AUTO_CONFIRM=false` until you've watched a real order
+   arrive correctly. Orders land as **drafts** you confirm by hand; a draft
+   costs nothing to discard, a confirmed order is money spent on a misprint.
+   Flip it to `true` for fully hands-off fulfillment.
+
+### Step 4 — Map the variant IDs (required)
+
+Each product+size needs its Printful `sync_variant_id`. List yours with:
+
+```bash
+curl -H "Authorization: Bearer $PRINTFUL_API_KEY" \
+     https://api.printful.com/store/products
+```
+
+Then record them in `src/lib/products.ts`:
+
+```ts
+variants: apparelVariants({ S: 4012345678, M: 4012345679, L: 4012345680 }),
+```
+
+**Until a size is mapped, checkout refuses to sell it** (once
+`PRINTFUL_API_KEY` is set) and tells the buyer the item can't ship yet.
+That's intentional — it's better than taking money for something that will
+never reach a printer.
+
+### What tax and shipping do
+
+Shipping follows the site's own copy: free over $50, otherwise a flat
+$5.95, both constants at the top of `src/lib/payments/square.ts`. Sales tax
+is left to your Square account's tax settings rather than hardcoded here.
+
+### Optional alternative: Shopify
+
+If you'd rather run commerce through **Shopify** instead of Square +
+Printful directly, there's an alternate stubbed provider at
+`src/lib/commerce/shopify-provider.ts` — swap the export in
+`src/lib/commerce/index.ts` away from `MockCommerceProvider`.
 
 ---
 
-## 5. Email capture
+## 4. Email capture
 
 The "JOIN THE SERVER" form posts to `src/app/api/subscribe/route.ts`, which
 currently just validates and logs. Set `KLAVIYO_API_KEY` +
 `KLAVIYO_LIST_ID`, or `MAILCHIMP_API_KEY` + `MAILCHIMP_LIST_ID`, in
 `.env.local`, then fill in the TODO in that file.
 
-## 6. Analytics
+## 5. Analytics
 
 GA4 and Meta Pixel are stubbed with TODOs in `src/app/layout.tsx`. Set
 `NEXT_PUBLIC_GA_MEASUREMENT_ID` / `NEXT_PUBLIC_META_PIXEL_ID` in
@@ -115,15 +164,17 @@ GA4 and Meta Pixel are stubbed with TODOs in `src/app/layout.tsx`. Set
 
 ---
 
-## 7. Project layout
+## 6. Project layout
 
 ```
 src/app/                    Routes (App Router)
 src/components/              UI components
 src/lib/products.ts           ← all product data, single source of truth
 src/lib/commerce/             Commerce provider abstraction (mock / Shopify)
-src/lib/payments/square.ts    Square checkout stub
-src/lib/fulfillment/printful.ts  Printful order stub
+src/lib/payments/square.ts    Square hosted checkout + order lookup
+src/lib/fulfillment/printful.ts  Printful order creation
+src/app/api/webhooks/square/  Payment webhook -> triggers fulfillment
+src/app/loot-acquired/        Post-purchase confirmation page
 src/lib/copy/                 All site copy (dialogue lines, taglines, reviews, patch notes, microcopy)
 src/lib/cart/cart-store.ts    Zustand cart store (persisted to localStorage)
 public/logo.png               Site logo / badge — replace with the real one
@@ -132,7 +183,7 @@ public/products/              Drop product renders here, named "<slug>.jpg"
 
 ---
 
-## 8. Every easter egg we built (so you don't miss your own jokes)
+## 7. Every easter egg we built (so you don't miss your own jokes)
 
 1. **Rotating homepage tagline** — the H1 on `/` picks one of 17 taglines
    at random on every load (`src/lib/copy/taglines.ts`,
@@ -183,7 +234,7 @@ public/products/              Drop product renders here, named "<slug>.jpg"
 
 ---
 
-## 9. Tech notes
+## 8. Tech notes
 
 - **Framework:** Next.js 14 App Router + TypeScript, static-generated
   wherever possible (products, patch notes, and most routes are prerendered
