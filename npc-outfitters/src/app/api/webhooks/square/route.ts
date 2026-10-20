@@ -1,8 +1,8 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
-import type { CartLine } from '@/lib/commerce/types';
 import { getSquareOrder } from '@/lib/payments/square';
-import { createPrintfulOrder, type ShippingAddress } from '@/lib/fulfillment/printful';
+import { extractCartLines, extractShippingAddress } from '@/lib/payments/square-order';
+import { createPrintfulOrder } from '@/lib/fulfillment/printful';
 
 /**
  * Square → Printful bridge. Square calls this when a payment completes, and
@@ -41,58 +41,6 @@ function verifySquareSignature(
   // lengths is not itself a secret leak.
   if (a.length !== b.length) return false;
   return timingSafeEqual(a, b);
-}
-
-/** Pull our cart lines back out of the Square order's line items. */
-function extractCartLines(order: Record<string, any>): CartLine[] {
-  const lineItems: any[] = Array.isArray(order?.line_items) ? order.line_items : [];
-  const lines: CartLine[] = [];
-
-  for (const item of lineItems) {
-    if (item?.metadata?.shipping === 'true') continue;
-
-    let slug: string | undefined = item?.metadata?.slug;
-    let size: string | undefined = item?.metadata?.size;
-
-    // Fallback for the case where metadata didn't survive the round trip.
-    if ((!slug || !size) && typeof item?.note === 'string' && item.note.includes('|')) {
-      const [noteSlug, noteSize] = item.note.split('|');
-      slug = slug || noteSlug;
-      size = size || noteSize;
-    }
-
-    if (!slug || !size) continue;
-    lines.push({ slug, size, quantity: Math.max(1, parseInt(item?.quantity ?? '1', 10) || 1) });
-  }
-
-  return lines;
-}
-
-/** Read the buyer's shipping address out of the Square order. */
-function extractShippingAddress(order: Record<string, any>): ShippingAddress | null {
-  const fulfillment = Array.isArray(order?.fulfillments) ? order.fulfillments[0] : null;
-  const recipient = fulfillment?.shipment_details?.recipient;
-  const addr = recipient?.address;
-  if (!addr) return null;
-
-  const name: string =
-    recipient?.display_name ||
-    [addr.first_name, addr.last_name].filter(Boolean).join(' ') ||
-    'Customer';
-
-  if (!addr.address_line_1 || !addr.locality || !addr.postal_code) return null;
-
-  return {
-    name,
-    address1: addr.address_line_1,
-    address2: addr.address_line_2 || undefined,
-    city: addr.locality,
-    stateCode: addr.administrative_district_level_1 || '',
-    countryCode: addr.country || 'US',
-    zip: addr.postal_code,
-    email: recipient?.email_address || undefined,
-    phone: recipient?.phone_number || undefined,
-  };
 }
 
 export async function POST(request: Request) {
