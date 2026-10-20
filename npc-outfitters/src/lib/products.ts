@@ -32,6 +32,20 @@ function apparelVariants(printfulIds: Record<string, number> = {}) {
   }));
 }
 
+/**
+ * Variants built from the exact sizes a Printful product actually offers.
+ * Use this once a product is synced, so the site can only sell sizes that
+ * exist (a blank might run S-2XL, not the XS-XXL that apparelVariants
+ * assumes). Key order here is the order shown on the product page.
+ */
+function printfulVariants(ids: Record<string, number>) {
+  return Object.entries(ids).map(([size, printfulVariantId]) => ({
+    size,
+    inStock: true,
+    printfulVariantId,
+  }));
+}
+
 export const PRODUCTS: Product[] = [
   // --- THE DEFAULT CLASS -----------------------------------------------
   {
@@ -203,7 +217,7 @@ export const PRODUCTS: Product[] = [
     npcLine:
       'A shirt about airport security. The graphic explains itself. I will not be explaining it.',
     honestDisclosure:
-      'Unisex organic oversized high-neck tee. Also produced in white and heather grey. This is the single loudest item in a store that otherwise sells gray.',
+      'Unisex organic oversized high-neck tee, black. This is the single loudest item in a store that otherwise sells gray.',
     stats: [
       { label: 'Attention', value: '+10', positive: true },
       { label: 'Comfort', value: '+6', positive: true },
@@ -212,10 +226,16 @@ export const PRODUCTS: Product[] = [
     ],
     durability: 96,
     classRequirement: 'Comfort with sustained eye contact at security.',
-    // TODO: paste this product's Printful sync_variant_id for each size,
-    // e.g. apparelVariants({ S: 4012345678, M: 4012345679, ... }).
-    // Until then this item can't be auto-fulfilled.
-    variants: apparelVariants(),
+    // Printful product 473840421 (Black). Heather Grey and White exist in
+    // Printful too but the site has no colour picker yet, so only Black is
+    // sellable. Sizes are what the blank really offers: S-2XL, no XS/XXL.
+    variants: printfulVariants({
+      S: 5510190375,
+      M: 5510190376,
+      L: 5510190377,
+      XL: 5510190378,
+      '2XL': 5510190379,
+    }),
     color: '#141414',
     imagePlaceholder: 'tee-tsa',
   },
