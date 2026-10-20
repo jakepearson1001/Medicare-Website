@@ -114,8 +114,13 @@ export async function createPrintfulOrder(
 
   if (!res.ok) {
     const message = body?.result ?? body?.error?.message ?? `HTTP ${res.status}`;
-    if (typeof message === 'string' && /external_id/i.test(message)) {
-      // Already created by an earlier delivery of this same webhook.
+    // Already created by an earlier delivery of this same webhook. Printful
+    // answers 400 with api_error_code OR-13 and the text "Order with this
+    // External ID already exists" (note: a space, not an underscore).
+    const isDuplicate =
+      body?.error?.api_error_code === 'OR-13' ||
+      (typeof message === 'string' && /external[\s_]?id.*already exists/i.test(message));
+    if (isDuplicate) {
       return { printfulOrderId: null, status: 'duplicate' };
     }
     throw new Error(`Printful createOrder failed (${res.status}): ${JSON.stringify(message)}`);
