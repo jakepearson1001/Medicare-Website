@@ -61,7 +61,7 @@ const config: Config = {
         blink: 'blink 0.7s ease-in-out 2',
         glitch: 'glitch 0.25s steps(2, end) 3',
         scan: 'scan 8s linear infinite',
-        marquee: 'marquee 120s linear infinite',
+        marquee: 'marquee 240s linear infinite',
         caret: 'caret 1s step-end infinite',
         'paw-swipe': 'pawSwipe 0.5s ease-out forwards',
         'cat-shake': 'catShake 0.32s ease-in-out 3',
