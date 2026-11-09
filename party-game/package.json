@@ -1,0 +1,13 @@
+{
+  "name": "odd-prompt-out",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Odd Prompt Out - a phone-controlled party game. One player secretly got a different prompt. Find them.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

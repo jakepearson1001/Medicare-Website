@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#1b1036">
+<title>Odd Prompt Out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  body { min-height: 100dvh; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 100dvh; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .top .logo { font-size: 1.3rem; }
+  .me { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .me .av { width: 34px; height: 34px; }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .label { font-weight: 700; color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .prompt { font-size: 1.6rem; font-weight: 700; }
+  .center { text-align: center; }
+  .huge { font-size: 3rem; font-weight: 700; }
+  .count { text-align: right; font-size: 0.9rem; }
+  .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,0.15); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--yellow); width: 100%; }
+  .opt { display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; background: #fff; color: var(--ink); border: 4px solid transparent;
+    border-radius: 18px; padding: 12px 14px; font: inherit; font-size: 1.1rem; cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,.25); }
+  .opt.sel { border-color: var(--pink); background: #fff0f7; }
+  .opt .t { flex: 1; font-weight: 600; }
+  .opt .n { font-size: 0.85rem; color: var(--muted); }
+  .opt .av { width: 34px; height: 34px; }
+  .note { opacity: 0.75; text-align: center; font-size: 0.95rem; }
+  .spin { font-size: 3rem; animation: wobble 1.4s ease-in-out infinite; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="logo"><span class="odd">ODD</span> PROMPT OUT</div><div class="me" id="me"></div></div>
+  <div class="bar" id="bar" style="visibility:hidden"><i id="bari"></i></div>
+  <div id="app" class="stack"></div>
+</div>
+
+<script>
+const COLORS = ["#ffd23f","#2de2c4","#ff8a3d","#5b8cff","#ff4f9a","#a3e635","#c084fc","#f472b6","#38bdf8","#fb7185"];
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const store = { get() { try { return JSON.parse(localStorage.getItem("opo-player")); } catch { return null; } },
+  set(v) { try { localStorage.setItem("opo-player", JSON.stringify(v)); } catch {} },
+  clear() { try { localStorage.removeItem("opo-player"); } catch {} } };
+
+let me = null, S = null, es = null, lastKey = "", endAt = 0, totalMs = 1, leaving = false;
+addEventListener("pagehide", () => { leaving = true; });
+const colorOf = (pid) => { const i = S?.players.findIndex((p) => p.id === pid) ?? 0; return COLORS[(i < 0 ? 0 : i) % COLORS.length]; };
+const av = (id, name) => `<span class="av" style="background:${colorOf(id)}">${esc(name?.[0]?.toUpperCase())}</span>`;
+
+async function api(action, extra = {}) {
+  const r = await fetch("/api", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, code: me?.code, pid: me?.pid, ...extra }) });
+  return r.json();
+}
+
+function showJoin(msg = "") {
+  if (es) es.close();
+  $("#me").innerHTML = ""; $("#bar").style.visibility = "hidden";
+  const pre = new URLSearchParams(location.search).get("code") || store.get()?.code || "";
+  $("#app").innerHTML = `
+    <div class="card pop stack" style="margin-top:20px">
+      <div class="label">Room code</div>
+      <input id="code" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ABCD" value="${esc(pre)}" style="text-transform:uppercase;letter-spacing:.2em;font-weight:700">
+      <div class="label">Your name</div>
+      <input id="name" maxlength="14" autocomplete="off" placeholder="Name" value="${esc(localStorage.getItem("opo-name") || "")}">
+      <div class="err" id="err">${esc(msg)}</div>
+      <button class="btn block" id="go">Play</button>
+    </div>
+    <p class="note">Open <b>/host</b> on a TV or laptop to create a room.</p>`;
+  const go = async () => {
+    const code = $("#code").value.trim().toUpperCase(), name = $("#name").value.trim();
+    try { localStorage.setItem("opo-name", name); } catch {}
+    me = { code };
+    const r = await api("join", { name });
+    if (r.error) { $("#err").textContent = r.error; return; }
+    me = { code, pid: r.pid }; store.set(me); connect();
+  };
+  $("#go").onclick = go;
+  $("#name").onkeydown = (e) => e.key === "Enter" && go();
+}
+
+function connect() {
+  if (es) es.close();
+  lastKey = "";
+  es = new EventSource(`/events?code=${me.code}&pid=${me.pid}`);
+  es.onmessage = (e) => {
+    const d = JSON.parse(e.data);
+    if (d.kicked) { store.clear(); es.close(); return showJoin("You were removed from the room."); }
+    S = d;
+    if (S.timeLeft) { endAt = Date.now() + S.timeLeft;
+      totalMs = { answer: 75000, vote: 60000, reveal: 25000 }[S.phase] || S.timeLeft; } else endAt = 0;
+    render();
+  };
+  es.onerror = () => {
+    if (leaving || es.readyState !== EventSource.CLOSED) return; // browser auto-retries otherwise
+    setTimeout(async () => {
+      if (leaving) return;
+      const r = await api("check").catch(() => null);
+      if (r?.ok) connect();
+      else if (r) { store.clear(); showJoin("Lost the room — it may have ended."); }
+      else setTimeout(connect, 2000);
+    }, 1000);
+  };
+}
+
+function tick() {
+  const bar = $("#bar");
+  if (endAt && S && S.phase !== "lobby" && S.phase !== "final") {
+    bar.style.visibility = "visible";
+    const left = Math.max(0, endAt - Date.now());
+    $("#bari").style.width = (100 * left / totalMs) + "%";
+    $("#bari").style.background = left < 10000 ? "var(--pink)" : "var(--yellow)";
+  } else bar.style.visibility = "hidden";
+  requestAnimationFrame(tick);
+}
+
+function waiting(title, sub) {
+  return `<div class="card pop center stack" style="margin-top:20px"><div class="spin">👀</div>
+    <h2>${title}</h2>${sub ? `<div class="muted">${sub}</div>` : ""}</div>`;
+}
+
+function render() {
+  const isVip = S.vip === me.pid;
+  const enough = S.players.length >= S.minPlayers;
+  $("#me").innerHTML = `${av(me.pid, S.me.name)}<span>${esc(S.me.name)}${isVip ? " 👑" : ""} · ${S.me.score}</span>`;
+
+  const key = [S.phase, S.round, S.inRound, S.myAnswer != null, S.myVote, isVip && enough, S.phase === "lobby" ? S.players.length : ""].join("|");
+  if (key === lastKey) return;
+  lastKey = key;
+  const app = $("#app");
+
+  if (S.phase === "lobby") {
+    app.innerHTML = waiting("You're in!", `Room <b>${S.code}</b> · ${S.players.length} player${S.players.length > 1 ? "s" : ""}. Watch the big screen.`) +
+      (isVip ? `<div class="card stack"><div><b>👑 You're the VIP.</b> Start when everybody's in.</div>
+        <button class="btn block" id="start" ${enough ? "" : "disabled"}>${enough ? "Start the game" : `Need ${S.minPlayers - S.players.length} more`}</button>
+        <div class="err" id="err"></div></div>` : "") +
+      `<button class="btn ghost" id="leave">Leave room</button>`;
+    if (isVip) $("#start").onclick = async () => { const r = await api("start"); if (r.error) $("#err").textContent = r.error; };
+    $("#leave").onclick = () => { store.clear(); showJoin(); };
+    return;
+  }
+
+  if (!S.inRound && (S.phase === "answer" || S.phase === "vote")) {
+    app.innerHTML = waiting("Hang tight!", "You joined mid-round. You'll jump in next round.");
+    return;
+  }
+
+  if (S.phase === "answer") {
+    if (S.myAnswer != null) {
+      app.innerHTML = waiting("Locked in!", `You wrote: “${esc(S.myAnswer)}”<br>Waiting for everyone else…`);
+      return;
+    }
+    app.innerHTML = `
+      <div class="card pop stack">
+        <div class="label">Round ${S.round} · Your prompt</div>
+        <div class="prompt">${esc(S.prompt)}</div>
+      </div>
+      <textarea id="ans" maxlength="80" placeholder="Your answer…"></textarea>
+      <div class="count" id="cnt">0 / 80</div>
+      <div class="err" id="err"></div>
+      <button class="btn block" id="send">Lock it in</button>
+      <p class="note">🤫 Someone has a different prompt. It might be you! Answer so you blend in…</p>`;
+    const ta = $("#ans");
+    ta.oninput = () => ($("#cnt").textContent = `${ta.value.length} / 80`);
+    $("#send").onclick = async () => {
+      const r = await api("answer", { text: ta.value });
+      if (r.error) $("#err").textContent = r.error;
+    };
+    return;
+  }
+
+  if (S.phase === "vote") {
+    const opts = S.answers.filter((a) => a.id !== me.pid);
+    app.innerHTML = `
+      <div class="card stack"><div class="label">Most players were asked</div><div class="prompt" style="font-size:1.3rem">“${esc(S.realPrompt)}”</div>
+        <div class="muted">Not what you got? Uh oh. Point the finger elsewhere 😈</div></div>
+      <div class="label" style="color:#fff">Who's the Odd One Out?</div>
+      ${opts.map((a) => `<button class="opt ${S.myVote === a.id ? "sel" : ""}" data-v="${a.id}">${av(a.id, a.name)}
+        <span class="t">${a.text ? esc(a.text) : "<i>(no answer)</i>"}<br><span class="n">${esc(a.name)}</span></span>${S.myVote === a.id ? "🗳️" : ""}</button>`).join("")}
+      <p class="note">${S.myVote ? "Vote cast — you can change it until time's up." : "Tap to vote."}</p>`;
+    app.querySelectorAll("[data-v]").forEach((b) => (b.onclick = () => api("vote", { target: b.dataset.v })));
+    return;
+  }
+
+  if (S.phase === "reveal") {
+    const R = S.result, wasOdd = R.oddId === me.pid;
+    const title = wasOdd ? (R.caught ? "You got caught! 🚨" : "You got away with it! 😈") : (R.caught ? "Odd One caught! 🎉" : "They escaped… 😬");
+    app.innerHTML = `
+      <div class="card pop center stack" style="margin-top:12px">
+        <h2>${title}</h2>
+        <div class="muted">${wasOdd ? `Your prompt was “${esc(R.oddPrompt)}”` : `It was <b>${esc(R.oddName)}</b>, who got “${esc(R.oddPrompt)}”`}</div>
+        <div class="huge" style="color:${S.myDelta ? "var(--pink)" : "var(--muted)"}">+${S.myDelta}</div>
+        <div class="muted">Total: ${S.me.score}</div>
+      </div>
+      ${isVip ? `<button class="btn alt block" id="next">${S.round >= S.totalRounds ? "Final results" : "Next round"} →</button>` : ""}`;
+    if (isVip) $("#next").onclick = () => api("skip");
+    return;
+  }
+
+  if (S.phase === "final") {
+    const sorted = [...S.players].sort((a, b) => b.score - a.score);
+    const rank = sorted.findIndex((p) => p.id === me.pid) + 1;
+    app.innerHTML = `
+      <div class="card pop center stack" style="margin-top:20px">
+        <div class="huge">${rank === 1 ? "🏆" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "🎈"}</div>
+        <h2>You finished #${rank}</h2><div class="muted">${S.me.score} points</div>
+      </div>
+      ${isVip ? `<button class="btn block" id="again">Play again</button>` : `<p class="note">Waiting for the VIP to start another game…</p>`}`;
+    if (isVip) $("#again").onclick = () => api("again");
+  }
+}
+
+(async () => {
+  requestAnimationFrame(tick);
+  const saved = store.get();
+  const urlCode = new URLSearchParams(location.search).get("code");
+  if (saved && (!urlCode || urlCode.toUpperCase() === saved.code)) {
+    me = saved;
+    const r = await api("check").catch(() => null);
+    if (r?.ok) return connect();
+    store.clear();
+  }
+  me = null;
+  showJoin();
+})();
+</script>
+</body>
+</html>
